@@ -1,6 +1,9 @@
 spring:
   application:
     name: iam-service
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
 # JWT Security Configuration
 security:

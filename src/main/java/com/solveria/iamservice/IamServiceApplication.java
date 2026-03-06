@@ -8,7 +8,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@EntityScan(basePackages = "com.solveria.core.iam.domain.model")
+@EntityScan(
+        basePackages = {
+            "com.solveria.core.iam.domain.model",
+            "com.solveria.core.iam.infrastructure.persistence.entity"
+        })
 @EnableJpaRepositories(basePackages = "com.solveria.core.iam.infrastructure.persistence.repository")
 @EnableConfigurationProperties(JwtProperties.class)
 public class IamServiceApplication {

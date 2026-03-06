@@ -11,14 +11,15 @@
 -- IAM: Modules
 -- ========================================
 CREATE TABLE IF NOT EXISTS iam_module (
-    id UUID PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
     name VARCHAR(100) NOT NULL UNIQUE,
     description VARCHAR(500),
     tenant_id VARCHAR(100),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by VARCHAR(100),
-    updated_at TIMESTAMP,
-    updated_by VARCHAR(100),
+    last_modified_at TIMESTAMP,
+    last_modified_by VARCHAR(100),
     version BIGINT NOT NULL DEFAULT 0
 );
 
@@ -28,14 +29,16 @@ CREATE INDEX idx_iam_module_tenant ON iam_module(tenant_id);
 -- IAM: Resources
 -- ========================================
 CREATE TABLE IF NOT EXISTS iam_resource (
-    id UUID PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
     name VARCHAR(100) NOT NULL,
+    module_id BIGINT NOT NULL REFERENCES iam_module(id),
     description VARCHAR(500),
     tenant_id VARCHAR(100),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by VARCHAR(100),
-    updated_at TIMESTAMP,
-    updated_by VARCHAR(100),
+    last_modified_at TIMESTAMP,
+    last_modified_by VARCHAR(100),
     version BIGINT NOT NULL DEFAULT 0,
     UNIQUE(name, tenant_id)
 );
@@ -46,14 +49,15 @@ CREATE INDEX idx_iam_resource_tenant ON iam_resource(tenant_id);
 -- IAM: Actions
 -- ========================================
 CREATE TABLE IF NOT EXISTS iam_action (
-    id UUID PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
     name VARCHAR(50) NOT NULL UNIQUE,
     description VARCHAR(500),
     tenant_id VARCHAR(100),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by VARCHAR(100),
-    updated_at TIMESTAMP,
-    updated_by VARCHAR(100),
+    last_modified_at TIMESTAMP,
+    last_modified_by VARCHAR(100),
     version BIGINT NOT NULL DEFAULT 0
 );
 
@@ -63,14 +67,15 @@ CREATE INDEX idx_iam_action_tenant ON iam_action(tenant_id);
 -- IAM: Fields
 -- ========================================
 CREATE TABLE IF NOT EXISTS iam_field (
-    id UUID PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
+    resource_id BIGINT NOT NULL REFERENCES iam_resource(id),
     description VARCHAR(500),
     tenant_id VARCHAR(100),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by VARCHAR(100),
-    updated_at TIMESTAMP,
-    updated_by VARCHAR(100),
+    last_modified_at TIMESTAMP,
+    last_modified_by VARCHAR(100),
     version BIGINT NOT NULL DEFAULT 0
 );
 
@@ -80,14 +85,14 @@ CREATE INDEX idx_iam_field_tenant ON iam_field(tenant_id);
 -- IAM: Roles
 -- ========================================
 CREATE TABLE IF NOT EXISTS iam_role (
-    id UUID PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description VARCHAR(500),
     tenant_id VARCHAR(100),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by VARCHAR(100),
-    updated_at TIMESTAMP,
-    updated_by VARCHAR(100),
+    last_modified_at TIMESTAMP,
+    last_modified_by VARCHAR(100),
     version BIGINT NOT NULL DEFAULT 0,
     UNIQUE(name, tenant_id)
 );
@@ -98,15 +103,15 @@ CREATE INDEX idx_iam_role_tenant ON iam_role(tenant_id);
 -- IAM: Users
 -- ========================================
 CREATE TABLE IF NOT EXISTS iam_user (
-    id UUID PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     username VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL,
     active BOOLEAN NOT NULL DEFAULT true,
     tenant_id VARCHAR(100),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by VARCHAR(100),
-    updated_at TIMESTAMP,
-    updated_by VARCHAR(100),
+    last_modified_at TIMESTAMP,
+    last_modified_by VARCHAR(100),
     version BIGINT NOT NULL DEFAULT 0,
     UNIQUE(username, tenant_id),
     UNIQUE(email, tenant_id)
@@ -119,17 +124,17 @@ CREATE INDEX idx_iam_user_email ON iam_user(email);
 -- IAM: Permissions
 -- ========================================
 CREATE TABLE IF NOT EXISTS iam_permission (
-    id UUID PRIMARY KEY,
-    role_id UUID NOT NULL REFERENCES iam_role(id) ON DELETE CASCADE,
-    module_id UUID NOT NULL REFERENCES iam_module(id),
-    resource_id UUID NOT NULL REFERENCES iam_resource(id),
-    action_id UUID NOT NULL REFERENCES iam_action(id),
-    field_id UUID REFERENCES iam_field(id),
+    id BIGSERIAL PRIMARY KEY,
+    role_id BIGINT NOT NULL REFERENCES iam_role(id) ON DELETE CASCADE,
+    module_id BIGINT NOT NULL REFERENCES iam_module(id),
+    resource_id BIGINT NOT NULL REFERENCES iam_resource(id),
+    action_id BIGINT NOT NULL REFERENCES iam_action(id),
+    field_id BIGINT REFERENCES iam_field(id),
     tenant_id VARCHAR(100),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by VARCHAR(100),
-    updated_at TIMESTAMP,
-    updated_by VARCHAR(100),
+    last_modified_at TIMESTAMP,
+    last_modified_by VARCHAR(100),
     version BIGINT NOT NULL DEFAULT 0
 );
 
@@ -140,8 +145,8 @@ CREATE INDEX idx_iam_permission_tenant ON iam_permission(tenant_id);
 -- IAM: User-Role Junction Table
 -- ========================================
 CREATE TABLE IF NOT EXISTS iam_user_roles (
-    user_id UUID NOT NULL REFERENCES iam_user(id) ON DELETE CASCADE,
-    role_id UUID NOT NULL REFERENCES iam_role(id) ON DELETE CASCADE,
+    user_id BIGINT NOT NULL REFERENCES iam_user(id) ON DELETE CASCADE,
+    role_id BIGINT NOT NULL REFERENCES iam_role(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, role_id)
 );
 
@@ -152,7 +157,7 @@ CREATE INDEX idx_iam_user_roles_role ON iam_user_roles(role_id);
 -- Audit: Audit Log
 -- ========================================
 CREATE TABLE IF NOT EXISTS audit_log (
-    id UUID PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     event_type VARCHAR(100) NOT NULL,
     entity_type VARCHAR(255),
     entity_id VARCHAR(255),
@@ -163,8 +168,8 @@ CREATE TABLE IF NOT EXISTS audit_log (
     correlation_id VARCHAR(100),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by VARCHAR(100),
-    updated_at TIMESTAMP,
-    updated_by VARCHAR(100),
+    last_modified_at TIMESTAMP,
+    last_modified_by VARCHAR(100),
     version BIGINT NOT NULL DEFAULT 0
 );
 
