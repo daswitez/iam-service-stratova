@@ -15,4 +15,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "security.jwt")
 public record JwtProperties(
         /** Enable JWT authentication. Default: false (DEV mode without auth). */
-        boolean enabled) {}
+        boolean enabled,
+
+        /** Secret key for signing generated JWT tokens (minimum 256 bits for HS256). */
+        String secretKey) {}

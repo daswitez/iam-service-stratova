@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoCo
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(
@@ -25,6 +26,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         })
 @EnableJpaRepositories(basePackages = "com.solveria.core.iam.infrastructure.persistence.repository")
 @EnableConfigurationProperties(JwtProperties.class)
+@ComponentScan(basePackages = {"com.solveria.iamservice", "com.solveria.core.iam"})
 public class IamServiceApplication {
 
     public static void main(String[] args) {

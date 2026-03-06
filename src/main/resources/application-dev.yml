@@ -2,6 +2,7 @@
 security:
   jwt:
     enabled: false
+    secret-key: c29sdmVyaWFfY29yZXNpbV9haV9kZXZfa2V5XzMyYnl0ZXNfbG9uZ194eHh4
 
 # Actuator Configuration (DEV: expose more endpoints)
 management:
