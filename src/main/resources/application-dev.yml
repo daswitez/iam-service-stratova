@@ -1,0 +1,40 @@
+# JWT Security Configuration (DEV mode: disabled by default)
+security:
+  jwt:
+    enabled: false
+
+# Actuator Configuration (DEV: expose more endpoints)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+# Logging Configuration (DEV: more verbose)
+logging:
+  level:
+    root: INFO
+    com.solveria: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+
+# Database & Flyway Config (DEV)
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/iam_db
+    username: iam_user
+    password: iam_password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate # Let Flyway handle migrations
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration

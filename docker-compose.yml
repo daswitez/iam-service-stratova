@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  iam-postgres:
+    image: postgres:16-alpine
+    container_name: solveria-iam-postgres
+    environment:
+      POSTGRES_USER: iam_user
+      POSTGRES_PASSWORD: iam_password
+      POSTGRES_DB: iam_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - iam-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U iam_user -d iam_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  iam-postgres-data:
