@@ -70,6 +70,14 @@ public class GlobalRestExceptionHandler {
         return handleSolverException(ex, HttpStatus.BAD_REQUEST, request, webRequest);
     }
 
+    @ExceptionHandler(com.solveria.iamservice.application.exception.AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(
+            com.solveria.iamservice.application.exception.AuthenticationException ex,
+            HttpServletRequest request,
+            WebRequest webRequest) {
+        return handleSolverException(ex, HttpStatus.UNAUTHORIZED, request, webRequest);
+    }
+
     private ResponseEntity<ErrorResponse> handleSolverException(
             SolverException ex,
             HttpStatus status,

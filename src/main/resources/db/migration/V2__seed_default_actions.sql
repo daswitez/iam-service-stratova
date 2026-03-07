@@ -11,3 +11,4 @@ VALUES
     ('ACT_DELETE', 'DELETE', 'Delete entities', CURRENT_TIMESTAMP, 0),
     ('ACT_EXECUTE', 'EXECUTE', 'Execute operations/actions', CURRENT_TIMESTAMP, 0)
 ON CONFLICT (name) DO NOTHING;
+

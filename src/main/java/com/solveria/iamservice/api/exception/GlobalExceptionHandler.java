@@ -1,5 +1,6 @@
 package com.solveria.iamservice.api.exception;
 
+import com.solveria.core.shared.exceptions.BusinessRuleViolationException;
 import com.solveria.core.shared.exceptions.EntityNotFoundException;
 import com.solveria.core.shared.exceptions.SolverException;
 import com.solveria.iamservice.api.exception.dto.ApiErrorResponse;
@@ -103,6 +104,12 @@ public class GlobalExceptionHandler {
     private HttpStatus determineHttpStatus(SolverException ex) {
         if (ex instanceof EntityNotFoundException) {
             return HttpStatus.NOT_FOUND;
+        }
+        if (ex instanceof com.solveria.iamservice.application.exception.AuthenticationException) {
+            return HttpStatus.UNAUTHORIZED;
+        }
+        if (ex instanceof BusinessRuleViolationException) {
+            return HttpStatus.CONFLICT;
         }
         return HttpStatus.BAD_REQUEST;
     }

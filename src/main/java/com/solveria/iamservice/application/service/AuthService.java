@@ -34,7 +34,8 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request) {
         Optional<User> existingUser = userRepository.findByEmail(request.email());
         if (existingUser.isPresent()) {
-            throw new IllegalArgumentException("Email already taken");
+            throw new com.solveria.iamservice.application.exception.UserAlreadyExistsException(
+                    request.email());
         }
 
         // Handle tenant mapping or create a new internal tenant logic here if required
@@ -79,14 +80,17 @@ public class AuthService {
         User user =
                 userRepository
                         .findByEmail(request.email())
-                        .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
+                        .orElseThrow(
+                                () ->
+                                        new com.solveria.iamservice.application.exception
+                                                .InvalidCredentialsException());
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new IllegalArgumentException("Invalid credentials");
+            throw new com.solveria.iamservice.application.exception.InvalidCredentialsException();
         }
 
         if (!user.isActive()) {
-            throw new IllegalArgumentException("User account is inactive");
+            throw new com.solveria.iamservice.application.exception.InactiveUserException();
         }
 
         Set<String> roles = Collections.emptySet(); // Simplify role translation for now

@@ -83,17 +83,68 @@ Gracias a SpringDoc, una vez levantada la API, podrás interactuar visualmente c
 
 ---
 
+## 4. Ejecutar las Pruebas (Testing)
+
+El servicio incluye pruebas unitarias y de integración. Las pruebas **no requieren** PostgreSQL ni Docker, ya que utilizan una base de datos H2 en memoria con Flyway deshabilitado.
+
+### Ejecutar todas las pruebas
+
+```bash
+./mvnw test
+```
+
+### Ejecutar solo pruebas unitarias (AuthServiceTest)
+
+```bash
+./mvnw test -Dtest=AuthServiceTest
+```
+
+### Ejecutar solo pruebas de integración (AuthControllerIT)
+
+```bash
+./mvnw test -Dtest=AuthControllerIT
+```
+
+### Ejecutar ambas suites de Auth
+
+```bash
+./mvnw test -Dtest=AuthServiceTest,AuthControllerIT
+```
+
+### ¿Qué cubre cada suite?
+
+| Suite | Tipo | Tests | Qué valida |
+|---|---|---|---|
+| `AuthServiceTest` | Unitario (Mockito) | 7 | Lógica de negocio de registro y login |
+| `AuthControllerIT` | Integración (MockMvc) | 5 | Endpoints HTTP, status codes, serialización JSON |
+
+### Notas técnicas
+- Las pruebas usan el perfil `test` con H2 en memoria (`application-test.yml`).
+- Flyway está **deshabilitado** en el perfil test porque los scripts de migración contienen SQL específico de PostgreSQL (`CREATE EXTENSION`, `ON CONFLICT`). Hibernate `ddl-auto: create-drop` genera el esquema automáticamente.
+- Si agregas un nuevo test de integración con `@SpringBootTest`, no necesitas levantar PostgreSQL.
+
+---
+
 ## Solución de Problemas Frecuentes
 
 1. **El puerto 5432 ya está en uso:**  
    Si ya tienes otra instancia de PostgreSQL instalada en tu equipo corriendo nativamente, Docker fallará. Debes detener la local (`sudo systemctl stop postgresql`) o cambiar el mapeo de puertos en el `docker-compose.yml`.
 
-2. **Errores de Hibernate o "Schema-validation":**  
+2. **Errores de Flyway (checksum mismatch):**  
+   Si modificas un archivo de migración que ya fue aplicado a la base de datos, Flyway rechazará el cambio. Para solucionarlo, recrea el volumen de Docker:
+   ```bash
+   docker-compose down -v
+   docker-compose up -d
+   ```
+   Esto borra los datos y permite que Flyway aplique las migraciones desde cero.
+
+3. **Errores de Hibernate o "Schema-validation":**  
    Si detienes el contenedor, borras los datos y vuelves a arrancar, a veces es necesario borrar la tabla `flyway_schema_history` o directamente hacer `docker-compose down -v` (el `-v` borra el volumen persistente) para levantar un entorno 100% fresco y permitir que los scripts de Flyway se apliquen desde 0.
 
-3. **Errores de Estilo (Spotless):**  
+4. **Errores de Estilo (Spotless):**  
    Si el build de Maven falla indicando "format violations", simplemente corre:
    ```bash
    ./mvnw spotless:apply
    ```
    Y luego vuelve a correr el comando de arranque.
+
