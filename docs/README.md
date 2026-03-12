@@ -42,6 +42,7 @@ Cambios funcionales documentados por corte:
 - **`changes/002-academic-mvp-relational-migration-v5.md`**: cierre del schema relacional del MVP en `V5`
 - **`changes/003-p0-4-real-startup-validation.md`**: evidencia de arranque real con PostgreSQL y Flyway aplicando hasta `V5`
 - **`changes/004-admin-users-crud-and-dev-jwt-protection.md`**: CRUD de usuarios y cierre de seguridad local para `/api/v1/admin/**`
+- **`changes/005-admin-universities-crud.md`**: CRUD de universidades administrativas
 
 ### 🔌 `api/`
 Documentación de la API REST:
@@ -50,6 +51,7 @@ Documentación de la API REST:
 - Guías de integración
 - **`api/multi-tenant-real-data-testing.md`**: Cómo probar el modelo multi-tenant actual con PostgreSQL real
 - **`api/admin-users.md`**: CRUD administrativo de usuarios con ejemplos `curl`
+- **`api/admin-universities.md`**: CRUD administrativo de universidades con ejemplos `curl`
 
 ## Flujo de trabajo recomendado
 

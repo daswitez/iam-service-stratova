@@ -71,8 +71,16 @@ public class TenantJpaEntity {
         return code;
     }
 
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public TenantType getType() {
@@ -85,6 +93,10 @@ public class TenantJpaEntity {
 
     public TenantStatus getStatus() {
         return status;
+    }
+
+    public void setStatus(TenantStatus status) {
+        this.status = status;
     }
 
     public Instant getCreatedAt() {

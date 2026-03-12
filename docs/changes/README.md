@@ -17,3 +17,5 @@ Esta carpeta registra cambios funcionales relevantes del `iam-service`, con foco
   - validacion real de arranque con PostgreSQL limpio, Flyway hasta `V5` y login del admin bootstrap
 - `004-admin-users-crud-and-dev-jwt-protection.md`
   - CRUD de usuarios administrativos y proteccion JWT local para `/api/v1/admin/**`
+- `005-admin-universities-crud.md`
+  - CRUD administrativo de universidades sobre `iam_tenant`
