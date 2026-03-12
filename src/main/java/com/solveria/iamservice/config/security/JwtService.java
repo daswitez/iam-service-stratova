@@ -4,6 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
+import java.util.Map;
 import javax.crypto.SecretKey;
 import org.springframework.stereotype.Service;
 
@@ -31,11 +32,19 @@ public class JwtService {
     /** Generate a new JWT token for the authenticated user */
     public String generateToken(
             String email, Long userId, String tenantId, Iterable<String> roles) {
+        return generateToken(
+                email,
+                userId,
+                Map.of(
+                        "tenantId", tenantId,
+                        "roles", roles));
+    }
+
+    public String generateToken(String email, Long userId, Map<String, Object> claims) {
         return Jwts.builder()
                 .subject(email)
                 .claim("userId", userId)
-                .claim("tenantId", tenantId)
-                .claim("roles", roles) // Inject multitenant security roles
+                .claims(claims)
                 .issuedAt(new Date())
                 .expiration(new Date((new Date()).getTime() + JWT_EXPIRATION_MS))
                 .signWith(key)

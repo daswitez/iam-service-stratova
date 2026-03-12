@@ -83,7 +83,53 @@ Gracias a SpringDoc, una vez levantada la API, podrás interactuar visualmente c
 
 ---
 
-## 4. Ejecutar las Pruebas (Testing)
+## 4. Modelo Multi-Tenant Actual
+
+El servicio ahora soporta una base académica multi-tenant real:
+
+- `Tenant` organizacional jerárquico
+  - `UNIVERSITY`
+  - `FACULTY`
+  - `PROGRAM`
+  - además de `HOLDING`, `ENTERPRISE`, `STARTUP` para evolución futura
+- `UserTenantMembership`
+- `AcademicCycle`
+- `Competition`
+- `CompetitionTenant`
+- `Team`
+- `TeamMember`
+
+### Qué hace hoy `register/login`
+
+- `register` crea o resuelve un tenant organizacional real.
+- crea membresía primaria del usuario en ese tenant.
+- `login` devuelve contexto de sesión con:
+  - tenant activo
+  - memberships
+  - competencias/equipos si existen
+
+### Qué todavía no existe por REST
+
+Todavía no hay endpoints CRUD administrativos para crear:
+
+- tenants
+- ciclos académicos
+- competencias
+- equipos
+- team members
+
+Mientras esos endpoints no existan, la forma recomendada de probar el flujo completo es sembrar PostgreSQL con SQL real.
+
+### Guía de prueba con datos reales
+
+Ver:
+
+- `docs/endpoints/iam/auth.md`
+- `docs/api/multi-tenant-real-data-testing.md`
+
+---
+
+## 5. Ejecutar las Pruebas (Testing)
 
 El servicio incluye pruebas unitarias y de integración. Las pruebas **no requieren** PostgreSQL ni Docker, ya que utilizan una base de datos H2 en memoria con Flyway deshabilitado.
 
@@ -148,3 +194,10 @@ El servicio incluye pruebas unitarias y de integración. Las pruebas **no requie
    ```
    Y luego vuelve a correr el comando de arranque.
 
+5. **Necesitas reiniciar el esquema tras agregar migraciones nuevas:**  
+   Si ya tenías una base vieja y añadiste nuevas migraciones multi-tenant, recrea el volumen:
+   ```bash
+   docker-compose down -v
+   docker-compose up -d
+   ```
+   Esto fuerza a Flyway a reconstruir el esquema completo desde cero.

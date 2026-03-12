@@ -21,10 +21,15 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         })
 @EntityScan(
         basePackages = {
+            "com.solveria.iamservice.multitenancy.persistence.entity",
             "com.solveria.core.iam.domain.model",
             "com.solveria.core.iam.infrastructure.persistence.entity"
         })
-@EnableJpaRepositories(basePackages = "com.solveria.core.iam.infrastructure.persistence.repository")
+@EnableJpaRepositories(
+        basePackages = {
+            "com.solveria.iamservice.multitenancy.persistence.repository",
+            "com.solveria.core.iam.infrastructure.persistence.repository"
+        })
 @EnableConfigurationProperties(JwtProperties.class)
 @ComponentScan(basePackages = {"com.solveria.iamservice", "com.solveria.core.iam"})
 public class IamServiceApplication {

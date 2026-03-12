@@ -36,6 +36,7 @@ Documentación de la API REST:
 - Especificaciones OpenAPI
 - Ejemplos de requests/responses
 - Guías de integración
+- **`api/multi-tenant-real-data-testing.md`**: Cómo probar el modelo multi-tenant actual con PostgreSQL real
 
 ## Flujo de trabajo recomendado
 

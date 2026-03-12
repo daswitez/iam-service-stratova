@@ -15,7 +15,10 @@ import com.solveria.iamservice.application.exception.InactiveUserException;
 import com.solveria.iamservice.application.exception.InvalidCredentialsException;
 import com.solveria.iamservice.application.exception.UserAlreadyExistsException;
 import com.solveria.iamservice.config.security.JwtService;
+import com.solveria.iamservice.multitenancy.persistence.entity.TenantJpaEntity;
+import com.solveria.iamservice.multitenancy.persistence.entity.TenantType;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -30,11 +34,15 @@ class AuthServiceTest {
     @Mock private UserRepositoryPort userRepository;
     @Mock private PasswordEncoder passwordEncoder;
     @Mock private JwtService jwtService;
+    @Mock private TenantProvisioningService tenantProvisioningService;
+    @Mock private UserContextService userContextService;
 
     @InjectMocks private AuthService authService;
 
     private User activeUser;
     private User inactiveUser;
+    private UserSessionContext sessionContext;
+    private TenantJpaEntity primaryTenant;
 
     @BeforeEach
     void setUp() {
@@ -44,6 +52,17 @@ class AuthServiceTest {
         inactiveUser =
                 new User("inactive", "inactive@example.com", "encodedPassword", "STUDENT", false);
         inactiveUser.setTenantId("tenant-1");
+
+        sessionContext =
+                new UserSessionContext(
+                        "tenant-1",
+                        "tenant-1",
+                        java.util.Set.of("STUDENT"),
+                        java.util.List.of(),
+                        java.util.List.of());
+
+        primaryTenant = new TenantJpaEntity("tenant-1", "Tenant 1", TenantType.UNIVERSITY, null);
+        ReflectionTestUtils.setField(primaryTenant, "id", UUID.randomUUID());
     }
 
     @Test
@@ -52,15 +71,35 @@ class AuthServiceTest {
                 new RegisterRequest(
                         "newuser", "new@example.com", "password", "STUDENT", "tenant-1", null);
 
+        when(tenantProvisioningService.resolveOrCreateTenant(
+                        request.tenantId(),
+                        request.tenantName(),
+                        request.userCategory(),
+                        request.username()))
+                .thenReturn(primaryTenant);
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(request.password())).thenReturn("hashedPassword");
 
-        User savedUser = new User("newuser", "new@example.com", "hashedPassword", "STUDENT", true);
+        User savedUser =
+                new User(
+                        1L,
+                        "newuser",
+                        "new@example.com",
+                        "hashedPassword",
+                        "STUDENT",
+                        true,
+                        java.util.Set.of(),
+                        "tenant-1",
+                        null,
+                        null,
+                        null,
+                        null,
+                        null);
         savedUser.setTenantId("tenant-1");
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
+        when(userContextService.buildContext(savedUser)).thenReturn(sessionContext);
 
-        when(jwtService.generateToken(anyString(), any(), anyString(), any()))
-                .thenReturn("mockJwtToken");
+        when(jwtService.generateToken(anyString(), any(), any())).thenReturn("mockJwtToken");
 
         AuthResponse response = authService.register(request);
 
@@ -92,15 +131,42 @@ class AuthServiceTest {
                 new RegisterRequest(
                         "newuser", "new@example.com", "password", "STUDENT", null, null);
 
+        when(tenantProvisioningService.resolveOrCreateTenant(
+                        request.tenantId(),
+                        request.tenantName(),
+                        request.userCategory(),
+                        request.username()))
+                .thenReturn(primaryTenant);
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(request.password())).thenReturn("hashedPassword");
 
-        User savedUser = new User("newuser", "new@example.com", "hashedPassword", "STUDENT", true);
+        User savedUser =
+                new User(
+                        1L,
+                        "newuser",
+                        "new@example.com",
+                        "hashedPassword",
+                        "STUDENT",
+                        true,
+                        java.util.Set.of(),
+                        UUID.randomUUID().toString(),
+                        null,
+                        null,
+                        null,
+                        null,
+                        null);
         savedUser.setTenantId("system-12345");
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
+        when(userContextService.buildContext(savedUser))
+                .thenReturn(
+                        new UserSessionContext(
+                                "system-12345",
+                                "system-12345",
+                                java.util.Set.of("STUDENT"),
+                                java.util.List.of(),
+                                java.util.List.of()));
 
-        when(jwtService.generateToken(anyString(), any(), anyString(), any()))
-                .thenReturn("mockJwtToken");
+        when(jwtService.generateToken(anyString(), any(), any())).thenReturn("mockJwtToken");
 
         AuthResponse response = authService.register(request);
 
@@ -115,8 +181,8 @@ class AuthServiceTest {
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.of(activeUser));
         when(passwordEncoder.matches(request.password(), activeUser.getPassword()))
                 .thenReturn(true);
-        when(jwtService.generateToken(anyString(), any(), anyString(), any()))
-                .thenReturn("mockJwtToken");
+        when(userContextService.buildContext(activeUser)).thenReturn(sessionContext);
+        when(jwtService.generateToken(anyString(), any(), any())).thenReturn("mockJwtToken");
 
         AuthResponse response = authService.login(request);
 
