@@ -31,6 +31,10 @@ Runbooks operativos para desarrollo y release:
 ### 📝 `adr/`
 Architecture Decision Records (ADRs) - decisiones arquitectónicas documentadas.
 
+### 🗺️ `plans/`
+Planes de implementacion detallados:
+- **001-academic-multitenant-mvp-implementation.md**: MVP academico multi-tenant con universidades, competencias y equipos
+
 ### 🔌 `api/`
 Documentación de la API REST:
 - Especificaciones OpenAPI
