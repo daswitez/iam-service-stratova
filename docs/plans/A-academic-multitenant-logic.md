@@ -58,6 +58,19 @@ La identidad es una.
 Las pertenencias son multiples.
 La competencia debe elegir explicitamente desde cual membership participa una persona.
 
+## 4.1 Control administrativo del sistema
+
+El MVP no debe permitir auto-registro abierto.
+
+Reglas:
+
+- la creacion de cuentas la hace un administrador autenticado
+- debe existir un `PLATFORM_ADMIN` bootstrap como operador raiz
+- ese administrador puede crear otros administradores, docentes, estudiantes y usuarios operativos
+- los endpoints de escritura deben exigir sesion valida y permisos administrativos
+
+Esto evita que cualquier usuario externo cree universidades, competencias o cuentas arbitrariamente.
+
 ## 5. Staff multiuniversidad
 
 Los docentes que luego actuan como jurados, mentores o inversores potenciales no deben modelarse como usuarios especiales por competencia.
@@ -192,6 +205,7 @@ IAM no debe ser dueno todavia de:
 ### Modulo 1 - Organizacion
 
 Responsable de tenants y memberships.
+Tambien debe incluir la administracion segura de usuarios.
 
 ### Modulo 2 - Competencia
 
@@ -247,19 +261,21 @@ Esto hace posible que otros servicios validen acceso sin reinventar la logica de
 
 ## 15. Flujo canonico del MVP
 
-1. crear universidad
-2. crear programa
-3. registrar docente y estudiante
-4. asignar memberships
-5. crear competencia con industria, producto y capital inicial
-6. habilitar tenants participantes
-7. consultar staff elegible multiuniversidad
-8. inscribir staff a la competencia
-9. inscribir estudiantes a la competencia
-10. crear equipos
-11. agregar estudiantes a equipos
-12. asignar roles ejecutivos
-13. hacer login con contexto correcto
+1. bootstrap de `PLATFORM_ADMIN`
+2. login del administrador
+3. crear universidad
+4. crear programa
+5. crear docentes, estudiantes y otros administradores
+6. asignar memberships
+7. crear competencia con industria, producto y capital inicial
+8. habilitar tenants participantes
+9. consultar staff elegible multiuniversidad
+10. inscribir staff a la competencia
+11. inscribir estudiantes a la competencia
+12. crear equipos
+13. agregar estudiantes a equipos
+14. asignar roles ejecutivos
+15. hacer login con contexto correcto
 
 ## 16. Criterio de calidad
 

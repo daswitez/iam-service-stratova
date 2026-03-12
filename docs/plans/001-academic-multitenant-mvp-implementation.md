@@ -102,6 +102,7 @@ Esta es la decision correcta para el MVP.
 
 ### Organizacionales
 
+- `PLATFORM_ADMIN`
 - `UNIVERSITY_ADMIN`
 - `PROGRAM_ADMIN`
 - `PROFESSOR`
@@ -141,6 +142,40 @@ Por eso necesitamos tres capas:
 1. `TenantMembership`
 2. `CompetitionEnrollment`
 3. `TeamMembership`
+
+## 5.1 Regla de seguridad central
+
+Para el MVP no debe existir registro publico abierto.
+
+Reglas:
+
+- solo un usuario autenticado con rol administrativo puede crear cuentas
+- ese administrador debe tener una sesion valida
+- el administrador puede crear:
+  - universidades
+  - programas
+  - competencias
+  - usuarios
+  - memberships
+  - enrollments
+  - equipos
+  - otros administradores
+
+### Administrador raiz del sistema
+
+Debe existir un `PLATFORM_ADMIN` bootstrap.
+
+Ese usuario:
+
+- no se crea por endpoint publico
+- se provisiona por migracion, seed inicial o mecanismo controlado de bootstrap
+- inicia sesion y desde ahi administra el resto del sistema
+
+### Consecuencia para la API
+
+- `login` sigue siendo publico para usuarios existentes
+- `register` abierto no debe existir en el MVP operativo
+- la creacion de usuarios debe pasar a endpoints administrativos protegidos
 
 ## 6. Entidades del MVP
 
@@ -317,13 +352,13 @@ No recomiendo abrir configuracion libre en esta primera version.
 
 ### 8.2 Registrar docentes, jurados, inversores, estudiantes
 
-1. el usuario se registra o es creado por admin
+1. el usuario es creado por un administrador autenticado
 2. se le asigna una o varias memberships a universidad/programa
 3. sigue siendo un usuario organizacional, no de competencia todavia
 
 ### 8.3 Crear competencia
 
-1. un `UNIVERSITY_ADMIN`, `PROGRAM_ADMIN` o `COMPETITION_OWNER` crea la competencia
+1. un `PLATFORM_ADMIN`, `UNIVERSITY_ADMIN`, `PROGRAM_ADMIN` o `COMPETITION_OWNER` crea la competencia
 2. define:
    - nombre
    - descripcion
@@ -437,13 +472,27 @@ Recomendacion:
 
 ## 9.2 Users and memberships
 
-- `POST /api/v1/auth/register`
+- `POST /api/v1/admin/users`
+- `GET /api/v1/admin/users/{userId}`
+- `PATCH /api/v1/admin/users/{userId}`
+- `DELETE /api/v1/admin/users/{userId}`
 - `POST /api/v1/tenant-memberships`
 - `GET /api/v1/tenant-memberships/{membershipId}`
 - `GET /api/v1/users/{userId}/tenant-memberships`
 - `PATCH /api/v1/tenant-memberships/{membershipId}`
 - `DELETE /api/v1/tenant-memberships/{membershipId}`
 - `GET /api/v1/tenants/{tenantId}/members`
+
+## 9.2.1 Auth y control de acceso
+
+- `POST /api/v1/auth/login`
+- `POST /api/v1/auth/logout`
+- `GET /api/v1/auth/me`
+
+Regla:
+
+- no exponer `POST /api/v1/auth/register` para alta publica en el MVP
+- toda creacion de cuenta debe ser administrativa
 
 ## 9.3 Competitions
 
@@ -657,6 +706,7 @@ Regla recomendada para el MVP:
 El JWT no debe exponer solo `tenantId`.
 Debe incluir:
 
+- `actorType`
 - `primaryTenantId`
 - `activeTenantId`
 - `tenantIds`
@@ -670,11 +720,15 @@ Regla:
 
 - permisos organizacionales se validan contra tenant membership
 - permisos operativos se validan contra competition enrollment o team membership
+- endpoints de escritura deben exigir sesion autenticada y rol administrativo compatible
 
 ## 13. Orden de implementacion recomendado
 
 ### Fase 1
 
+- bootstrap seguro de `PLATFORM_ADMIN`
+- deshabilitar registro publico
+- endpoint administrativo de creacion de usuarios
 - endpoint crear universidad
 - endpoint listar/editar/eliminar universidad
 - endpoint crear sub-tenant
@@ -748,6 +802,9 @@ Debe ser duenio de:
 
 ### Decision final para el MVP
 
+- no existe registro abierto para cualquiera
+- la administracion del sistema parte de un `PLATFORM_ADMIN` autenticado
+- ese administrador puede crear usuarios y otros administradores
 - estudiantes: **si** deben estar inscritos directamente en la competencia
 - luego se unen a equipos
 - docentes/jurados/inversores: tambien deben estar inscritos en la competencia, pero como staff
@@ -769,18 +826,20 @@ Debe ser duenio de:
 
 Cuando implementemos hasta aqui, ya deberiamos poder hacer este flujo completo por API:
 
-1. crear universidad
-2. crear programa
-3. registrar docente
-4. registrar estudiante
-5. crear competencia
-6. habilitar tenants participantes
-7. consultar staff elegible desde multiples universidades participantes
-8. asignar jurados/inversores/docentes a la competencia
-9. inscribir estudiantes a la competencia
-10. crear equipos
-11. anadir estudiantes a equipos
-12. asignar roles ejecutivos del equipo
-13. hacer login y recibir contexto correcto de tenant + competencia + equipo
+1. bootstrap de `PLATFORM_ADMIN`
+2. login administrativo
+3. crear universidad
+4. crear programa
+5. crear otros administradores, docentes y estudiantes
+6. asignar memberships
+7. crear competencia
+8. habilitar tenants participantes
+9. consultar staff elegible desde multiples universidades participantes
+10. asignar jurados/inversores/docentes a la competencia
+11. inscribir estudiantes a la competencia
+12. crear equipos
+13. anadir estudiantes a equipos
+14. asignar roles ejecutivos del equipo
+15. hacer login y recibir contexto correcto de tenant + competencia + equipo
 
 Ese es el punto exacto donde el IAM multi-tenant queda funcional para el MVP academico, incluso antes de entrar al motor de simulacion.

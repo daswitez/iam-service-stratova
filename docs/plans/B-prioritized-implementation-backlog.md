@@ -25,6 +25,24 @@ La prioridad sigue dependencias reales entre modulos, no conveniencia aislada.
 
 ## 4. P0 - Fundacion de dominio y datos
 
+### P0.0 Modelo de acceso administrativo
+
+Objetivo:
+
+- cerrar la seguridad base antes de abrir CRUDs
+
+Tareas:
+
+- definir rol `PLATFORM_ADMIN`
+- definir estrategia de bootstrap inicial
+- decidir si el bootstrap sera por migracion, seed o variable segura
+- deshabilitar registro publico abierto
+- definir endpoints administrativos de gestion de usuarios
+
+Salida esperada:
+
+- modelo de acceso administrativo cerrado y sin alta publica
+
 ### P0.1 Revisar esquema actual vs esquema objetivo
 
 Objetivo:
@@ -118,6 +136,26 @@ Dependencias:
 
 - P0 completo
 
+### P1.1.1 Administracion de usuarios
+
+Objetivo:
+
+- permitir que solo administradores autenticados creen cuentas
+
+Tareas:
+
+- endpoint `POST /api/v1/admin/users`
+- detalle de usuario
+- update de usuario
+- baja logica de usuario
+- creacion de otros administradores
+
+Reglas:
+
+- no exponer `auth/register` publico
+- solo roles administrativos autorizados pueden crear cuentas
+- el `PLATFORM_ADMIN` puede crear otros administradores
+
 ### P1.2 CRUD de sub-tenants
 
 Objetivo:
@@ -165,6 +203,7 @@ Objetivo:
 Tareas:
 
 - proteger endpoints de tenant
+- proteger endpoints administrativos de usuarios
 - validar permisos administrativos
 - normalizar errores
 
@@ -391,6 +430,7 @@ Tareas:
 - agregar claims de memberships
 - agregar claims de enrollments
 - agregar equipos activos
+- agregar `actorType` o rol administrativo efectivo
 - definir tamano maximo del token
 
 ### P3.2 Context switch
@@ -479,8 +519,10 @@ Tareas:
 
 ### Sprint 1
 
+- P0.0
 - P0 completo
 - P1.1
+- P1.1.1
 - P1.2
 - P1.3
 
@@ -520,9 +562,11 @@ Tareas:
 
 El siguiente paso correcto es:
 
-1. revisar si faltan migraciones para `CompetitionEnrollment`, `TeamMembership` y configuracion de competencia
-2. implementar CRUD de `Tenant`
-3. implementar CRUD de `TenantMembership`
-4. implementar CRUD de `Competition`
+1. cerrar bootstrap de `PLATFORM_ADMIN` y deshabilitar registro publico
+2. revisar si faltan migraciones para `CompetitionEnrollment`, `TeamMembership` y configuracion de competencia
+3. implementar administracion de usuarios
+4. implementar CRUD de `Tenant`
+5. implementar CRUD de `TenantMembership`
+6. implementar CRUD de `Competition`
 
 No recomiendo empezar por equipos ni JWT antes de tener organizacion y competencia consolidadas.

@@ -77,6 +77,7 @@ Ejemplos:
 Actualizar:
 
 - `docs/endpoints/iam/auth.md` si afecta auth
+- documentacion administrativa de usuarios si cambia el flujo de alta
 - documentacion de endpoints especifica que se cree para tenants, competitions, enrollments o teams
 - `iam-service/docs/api/multi-tenant-real-data-testing.md` si cambia la manera de probar
 
@@ -101,6 +102,7 @@ Actualizar:
 
 Cuando se implemente:
 
+- crear documentacion de endpoints administrativos de usuarios
 - crear documentacion de endpoints de tenants
 - crear documentacion de endpoints de memberships
 - agregar ejemplos reales de alta y consulta
@@ -196,10 +198,11 @@ Una tarea de implementacion queda realmente cerrada solo si:
 
 Segun el siguiente paso recomendado del backlog:
 
-1. si arrancamos CRUD de tenants, crear doc de endpoints de tenants
-2. luego crear doc de endpoints de memberships
-3. despues doc de competencias
-4. despues doc de enrollments
-5. despues doc de equipos y roles ejecutivos
+1. si arrancamos bootstrap administrativo, actualizar `auth.md` y crear doc de usuarios administrativos
+2. si arrancamos CRUD de tenants, crear doc de endpoints de tenants
+3. luego crear doc de endpoints de memberships
+4. despues doc de competencias
+5. despues doc de enrollments
+6. despues doc de equipos y roles ejecutivos
 
 Eso mantiene la documentacion creciendo en el mismo orden que el producto.
