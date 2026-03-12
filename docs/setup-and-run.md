@@ -101,8 +101,10 @@ El servicio ahora soporta una base académica multi-tenant real:
 
 ### Qué hace hoy `register/login`
 
-- `register` crea o resuelve un tenant organizacional real.
-- crea membresía primaria del usuario en ese tenant.
+- `register` público está deshabilitado.
+- al iniciar en `dev`, el servicio bootstrapea un usuario `PLATFORM_ADMIN` si no existe:
+  - `admin@solveria.local`
+  - `Admin12345!`
 - `login` devuelve contexto de sesión con:
   - tenant activo
   - memberships

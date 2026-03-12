@@ -22,6 +22,8 @@ La carpeta `plans/` queda organizada asi:
   - backlog priorizado y orden de ejecucion
 - `C-documentation-evolution-guide.md`
   - reglas para mantener la documentacion actualizada
+- `D-relational-model-contract-mvp.md`
+  - contrato relacional final del MVP antes de migraciones
 
 Regla:
 
@@ -30,9 +32,9 @@ Regla:
 
 Si luego se necesita agregar mas documentos, seguir este orden:
 
-- `D-...`
 - `E-...`
 - `F-...`
+- `G-...`
 
 ## 3. Principio de documentacion viva
 

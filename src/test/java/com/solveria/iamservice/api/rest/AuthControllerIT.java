@@ -1,6 +1,7 @@
 package com.solveria.iamservice.api.rest;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -11,7 +12,6 @@ import com.solveria.iamservice.api.rest.dto.AuthResponse;
 import com.solveria.iamservice.api.rest.dto.LoginRequest;
 import com.solveria.iamservice.api.rest.dto.RegisterRequest;
 import com.solveria.iamservice.application.exception.InvalidCredentialsException;
-import com.solveria.iamservice.application.exception.UserAlreadyExistsException;
 import com.solveria.iamservice.application.service.AuthService;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
@@ -33,29 +33,18 @@ class AuthControllerIT {
     @MockitoBean private AuthService authService;
 
     @Test
-    void register_Success_Returns201() throws Exception {
+    void register_PublicRegistrationDisabled_Returns403() throws Exception {
         RegisterRequest request =
                 new RegisterRequest("testuser", "test@test.com", "password", "STUDENT", null, null);
-
-        AuthResponse.UserDto userDto =
-                new AuthResponse.UserDto(
-                        1L,
-                        "testuser",
-                        "test@test.com",
-                        "tenant-1",
-                        "STUDENT",
-                        Collections.emptySet());
-        AuthResponse response = new AuthResponse("mockJwt", userDto);
-
-        when(authService.register(any(RegisterRequest.class))).thenReturn(response);
 
         mockMvc.perform(
                         post("/api/v1/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.token").value("mockJwt"))
-                .andExpect(jsonPath("$.user.email").value("test@test.com"));
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.errorCode").value("FORBIDDEN"));
+
+        verifyNoInteractions(authService);
     }
 
     @Test
@@ -68,21 +57,6 @@ class AuthControllerIT {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void register_UserExists_Returns409() throws Exception {
-        RegisterRequest request =
-                new RegisterRequest("testuser", "test@test.com", "password", "STUDENT", null, null);
-
-        when(authService.register(any(RegisterRequest.class)))
-                .thenThrow(new UserAlreadyExistsException("test@test.com"));
-
-        mockMvc.perform(
-                        post("/api/v1/auth/register")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isConflict());
     }
 
     @Test

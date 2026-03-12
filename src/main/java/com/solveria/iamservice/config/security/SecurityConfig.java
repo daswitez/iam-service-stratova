@@ -7,21 +7,28 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.LinkedHashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
@@ -59,7 +66,8 @@ public class SecurityConfig {
      */
     @Bean
     @ConditionalOnProperty(name = "security.jwt.enabled", havingValue = "true")
-    public SecurityFilterChain jwtSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain jwtSecurityFilterChain(
+            HttpSecurity http, JwtAuthorityExtractor jwtAuthorityExtractor) throws Exception {
         log.info("event=SECURITY_CONFIG_JWT_ENABLED");
 
         http
@@ -100,6 +108,9 @@ public class SecurityConfig {
                                         .requestMatchers(
                                                 new AntPathRequestMatcher("/api/v1/auth/**"))
                                         .permitAll()
+                                        .requestMatchers(
+                                                new AntPathRequestMatcher("/api/v1/admin/**"))
+                                        .hasAuthority("ROLE_PLATFORM_ADMIN")
 
                                         // Protected endpoints: All /api/** require authentication
                                         .requestMatchers(new AntPathRequestMatcher("/api/**"))
@@ -113,7 +124,13 @@ public class SecurityConfig {
                 // JWT decoder will be auto-configured from
                 // spring.security.oauth2.resourceserver.jwt.issuer-uri
                 // or spring.security.oauth2.resourceserver.jwt.jwk-set-uri properties
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {}))
+                .oauth2ResourceServer(
+                        oauth2 ->
+                                oauth2.jwt(
+                                        jwt ->
+                                                jwt.jwtAuthenticationConverter(
+                                                        jwtAuthenticationConverter(
+                                                                jwtAuthorityExtractor))))
 
                 // Configure exception handling to return consistent ApiErrorResponse
                 .exceptionHandling(
@@ -134,7 +151,9 @@ public class SecurityConfig {
             name = "security.jwt.enabled",
             havingValue = "false",
             matchIfMissing = true)
-    public SecurityFilterChain devSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain devSecurityFilterChain(
+            HttpSecurity http, LocalJwtAuthenticationFilter localJwtAuthenticationFilter)
+            throws Exception {
         log.info("event=SECURITY_CONFIG_JWT_DISABLED mode=DEV");
 
         http
@@ -145,14 +164,43 @@ public class SecurityConfig {
                 // Stateless session management
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(
+                        localJwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(
                         auth ->
-                                auth
-                                        // Allow all requests in DEV mode
+                                auth.requestMatchers(
+                                                new AntPathRequestMatcher("/actuator/health/**"),
+                                                new AntPathRequestMatcher("/actuator/info/**"),
+                                                new AntPathRequestMatcher("/v3/api-docs/**"),
+                                                new AntPathRequestMatcher("/swagger-ui/**"),
+                                                new AntPathRequestMatcher("/swagger-ui.html"),
+                                                new AntPathRequestMatcher("/error"),
+                                                new AntPathRequestMatcher("/api/v1/auth/**"))
+                                        .permitAll()
+                                        .requestMatchers(
+                                                new AntPathRequestMatcher("/api/v1/admin/**"))
+                                        .hasAuthority("ROLE_PLATFORM_ADMIN")
+                                        // Keep non-admin APIs open in DEV until the rest of the
+                                        // modules are migrated to JWT.
                                         .anyRequest()
-                                        .permitAll());
+                                        .permitAll())
+                .exceptionHandling(
+                        exceptions ->
+                                exceptions
+                                        .authenticationEntryPoint(authenticationEntryPoint())
+                                        .accessDeniedHandler(accessDeniedHandler()));
 
         return http.build();
+    }
+
+    private Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter(
+            JwtAuthorityExtractor jwtAuthorityExtractor) {
+        JwtGrantedAuthoritiesConverter scopesConverter = new JwtGrantedAuthoritiesConverter();
+        return jwt -> {
+            var authorities = new LinkedHashSet<>(scopesConverter.convert(jwt));
+            authorities.addAll(jwtAuthorityExtractor.extract(jwt.getClaims()));
+            return new JwtAuthenticationToken(jwt, authorities, jwt.getSubject());
+        };
     }
 
     /**

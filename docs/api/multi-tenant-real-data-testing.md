@@ -1,10 +1,11 @@
 # IAM Multi-Tenant Testing With Real Data
 
-Esta guía permite probar el modelo multi-tenant académico real ya implementado en `iam-service`, incluso antes de tener endpoints CRUD administrativos para tenants, ciclos, competencias y equipos.
+Esta guía permite probar el modelo multi-tenant académico real ya implementado en `iam-service`, incluso antes de tener endpoints CRUD administrativos completos para usuarios, tenants, ciclos, competencias y equipos.
 
 ## Qué ya está implementado
 
-- Registro y login con contexto multi-tenant.
+- Bootstrap automático de un `PLATFORM_ADMIN` en `dev`.
+- Login con contexto multi-tenant.
 - Resolución de `tenantId` por UUID o por `code`.
 - Creación automática de tenant si el `tenantId` enviado no existe.
 - Respuesta de auth con:
@@ -14,6 +15,7 @@ Esta guía permite probar el modelo multi-tenant académico real ya implementado
 
 ## Qué todavía no existe por API
 
+- CRUD REST para usuarios administrativos
 - CRUD REST para `Tenant`
 - CRUD REST para `AcademicCycle`
 - CRUD REST para `Competition`
@@ -24,8 +26,9 @@ Mientras esos endpoints no existan, la forma correcta de probar el flujo complet
 
 1. levantar PostgreSQL
 2. sembrar datos reales en la DB
-3. registrar o loguear usuarios
-4. verificar el `context` devuelto por auth
+3. loguear el administrador bootstrap
+4. sembrar usuarios reales en la DB o esperar los futuros endpoints administrativos
+5. verificar el `context` devuelto por auth
 
 ## 1. Levantar base y API
 
@@ -76,37 +79,44 @@ VALUES
   ('50000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000001', '11000000-0000-0000-0000-000000000002', 'team-condor', 'Team Condor', 'ACTIVE', CURRENT_TIMESTAMP);
 ```
 
-## 4. Registrar usuarios contra tenants reales
-
-### Estudiante UMSA
+## 4. Login del administrador bootstrap
 
 ```bash
-curl -X POST http://localhost:8080/api/v1/auth/register \
+curl -X POST http://localhost:8080/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{
-    "username": "juan.perez",
-    "email": "juan.perez@umsa.bo",
-    "password": "SecurePass123",
-    "userCategory": "STUDENT",
-    "tenantId": "adm-sis-umsa"
+    "email": "admin@solveria.local",
+    "password": "Admin12345!"
   }'
 ```
 
-### Estudiante UCB
+Debes recibir un usuario con rol `PLATFORM_ADMIN`.
 
-```bash
-curl -X POST http://localhost:8080/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "maria.lopez",
-    "email": "maria.lopez@ucb.edu.bo",
-    "password": "SecurePass123",
-    "userCategory": "STUDENT",
-    "tenantId": "ing-comercial-ucb"
-  }'
+## 5. Registrar usuarios contra tenants reales
+
+Por ahora, como el registro público está deshabilitado y el CRUD administrativo de usuarios todavía no existe, estos usuarios deben insertarse por SQL.
+
+### Inserción SQL de estudiantes
+
+```sql
+INSERT INTO iam_user (username, email, password, user_category, active, tenant_id, created_at, version)
+VALUES
+  ('juan.perez', 'juan.perez@umsa.bo', '<bcrypt-de-SecurePass123>', 'STUDENT', true, '11000000-0000-0000-0000-000000000001', CURRENT_TIMESTAMP, 0),
+  ('maria.lopez', 'maria.lopez@ucb.edu.bo', '<bcrypt-de-SecurePass123>', 'STUDENT', true, '11000000-0000-0000-0000-000000000002', CURRENT_TIMESTAMP, 0);
 ```
 
-## 5. Obtener IDs reales de usuarios creados
+Reemplaza `<bcrypt-de-SecurePass123>` por un hash BCrypt real de `SecurePass123`.
+
+Luego crea las memberships para que el contexto multi-tenant salga correctamente en `login`:
+
+```sql
+INSERT INTO iam_user_tenant_membership (id, user_id, tenant_id, membership_type, status, created_at)
+VALUES
+  ('71000000-0000-0000-0000-000000000001', 1, '11000000-0000-0000-0000-000000000001', 'PRIMARY', 'ACTIVE', CURRENT_TIMESTAMP),
+  ('71000000-0000-0000-0000-000000000002', 2, '11000000-0000-0000-0000-000000000002', 'PRIMARY', 'ACTIVE', CURRENT_TIMESTAMP);
+```
+
+## 6. Obtener IDs reales de usuarios creados
 
 Dentro de `psql`:
 
@@ -116,7 +126,7 @@ FROM iam_user
 ORDER BY id;
 ```
 
-## 6. Vincular usuarios a equipos para que aparezca el contexto competitivo
+## 7. Vincular usuarios a equipos para que aparezca el contexto competitivo
 
 Si `juan.perez` obtuvo `id = 1` y `maria.lopez` obtuvo `id = 2`:
 
@@ -127,7 +137,7 @@ VALUES
   ('60000000-0000-0000-0000-000000000002', '50000000-0000-0000-0000-000000000002', 2, 'CAPTAIN', 'ACTIVE', CURRENT_TIMESTAMP);
 ```
 
-## 7. Login y validación del contexto
+## 8. Login y validación del contexto
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/auth/login \
@@ -145,7 +155,7 @@ Debes recibir:
 - `context.memberships`
 - `context.teamCompetitions`
 
-## 8. Qué validar manualmente
+## 9. Qué validar manualmente
 
 - El usuario registrado queda ligado al tenant académico correcto.
 - `memberships` devuelve el tenant real y no un `tenantId` inventado.
@@ -156,7 +166,7 @@ Debes recibir:
   - ciclo académico
   - tenant de origen del equipo
 
-## 9. Consultas útiles
+## 10. Consultas útiles
 
 ### Ver tenants
 
@@ -205,7 +215,7 @@ JOIN iam_team team ON team.id = tm.team_id
 ORDER BY team.code, tm.user_id;
 ```
 
-## 10. Estado actual del MVP
+## 11. Estado actual del MVP
 
 Hoy el modelo correcto ya existe en DB y auth:
 
@@ -216,4 +226,4 @@ Hoy el modelo correcto ya existe en DB y auth:
 - equipo
 - membresía a equipo
 
-Lo siguiente que falta construir es la capa REST administrativa para no depender de SQL manual.
+Lo siguiente que falta construir es la capa REST administrativa segura para no depender de SQL manual.

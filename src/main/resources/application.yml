@@ -10,6 +10,10 @@ security:
   jwt:
     enabled: false  # Default: disabled for DEV mode
 
+bootstrap:
+  admin:
+    enabled: false
+
 server:
   port: 8080
 

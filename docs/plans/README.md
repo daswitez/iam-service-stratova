@@ -8,3 +8,5 @@
   - backlog priorizado por modulos, dependencias y orden correcto
 - `C-documentation-evolution-guide.md`
   - reglas para mantener la documentacion actualizada con topologia alfabetica
+- `D-relational-model-contract-mvp.md`
+  - contrato relacional final del MVP academico para ejecutar `P0.3`

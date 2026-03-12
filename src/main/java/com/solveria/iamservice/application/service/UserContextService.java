@@ -1,7 +1,10 @@
 package com.solveria.iamservice.application.service;
 
 import com.solveria.core.iam.domain.model.User;
+import com.solveria.core.iam.infrastructure.persistence.entity.RoleJpaEntity;
+import com.solveria.core.iam.infrastructure.persistence.repository.RoleJpaRepository;
 import com.solveria.iamservice.api.rest.dto.AuthResponse;
+import com.solveria.iamservice.config.security.SecurityConstants;
 import com.solveria.iamservice.multitenancy.persistence.entity.MembershipStatus;
 import com.solveria.iamservice.multitenancy.persistence.entity.MembershipType;
 import com.solveria.iamservice.multitenancy.persistence.entity.TeamMemberJpaEntity;
@@ -20,12 +23,15 @@ public class UserContextService {
 
     private final UserTenantMembershipJpaRepository userTenantMembershipJpaRepository;
     private final TeamMemberJpaRepository teamMemberJpaRepository;
+    private final RoleJpaRepository roleJpaRepository;
 
     public UserContextService(
             UserTenantMembershipJpaRepository userTenantMembershipJpaRepository,
-            TeamMemberJpaRepository teamMemberJpaRepository) {
+            TeamMemberJpaRepository teamMemberJpaRepository,
+            RoleJpaRepository roleJpaRepository) {
         this.userTenantMembershipJpaRepository = userTenantMembershipJpaRepository;
         this.teamMemberJpaRepository = teamMemberJpaRepository;
+        this.roleJpaRepository = roleJpaRepository;
     }
 
     @Transactional(readOnly = true)
@@ -42,6 +48,7 @@ public class UserContextService {
             String legacyTenantId = user.getTenantId();
             membershipDtos =
                     StringUtils.hasText(legacyTenantId)
+                                    && !SecurityConstants.SYSTEM_TENANT_ID.equals(legacyTenantId)
                             ? List.of(
                                     new AuthResponse.TenantMembershipDto(
                                             legacyTenantId,
@@ -50,8 +57,11 @@ public class UserContextService {
                                             "LEGACY",
                                             MembershipType.PRIMARY.name()))
                             : List.of();
-            primaryTenantId = legacyTenantId;
-            activeTenantId = legacyTenantId;
+            primaryTenantId =
+                    SecurityConstants.SYSTEM_TENANT_ID.equals(legacyTenantId)
+                            ? null
+                            : legacyTenantId;
+            activeTenantId = primaryTenantId;
         } else {
             membershipDtos =
                     memberships.stream()
@@ -87,6 +97,9 @@ public class UserContextService {
 
         Set<String> roles = new LinkedHashSet<>();
         roles.add(user.getUserCategory());
+        roleJpaRepository.findAllById(user.getRoleIds()).stream()
+                .map(RoleJpaEntity::getName)
+                .forEach(roles::add);
 
         return new UserSessionContext(
                 primaryTenantId, activeTenantId, roles, membershipDtos, teamCompetitionDtos);

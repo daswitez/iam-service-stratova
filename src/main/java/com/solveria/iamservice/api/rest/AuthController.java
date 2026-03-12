@@ -1,5 +1,6 @@
 package com.solveria.iamservice.api.rest;
 
+import com.solveria.iamservice.api.exception.ErrorCodes;
 import com.solveria.iamservice.api.rest.dto.AuthResponse;
 import com.solveria.iamservice.api.rest.dto.LoginRequest;
 import com.solveria.iamservice.api.rest.dto.RegisterRequest;
@@ -7,6 +8,7 @@ import com.solveria.iamservice.application.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -16,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Authentication", description = "Multi-tenant user registration and login")
+@Tag(name = "Authentication", description = "Administrative multi-tenant login")
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -30,18 +32,24 @@ public class AuthController {
     }
 
     @Operation(
-            summary = "Register a new user",
+            summary = "Public registration disabled",
             description =
-                    "Creates a new user account with multi-tenant support. Supports STUDENT, FOUNDER, and EXECUTIVE categories.")
+                    "Public self-registration is disabled. User accounts must be created by an authenticated administrator.")
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<Map<String, String>> register(
+            @Valid @RequestBody RegisterRequest request) {
         log.info(
-                "event=REGISTER_REQUEST email={} category={} tenantId={}",
+                "event=PUBLIC_REGISTER_BLOCKED email={} category={} tenantId={}",
                 request.email(),
                 request.userCategory(),
                 request.tenantId());
-        AuthResponse response = authService.register(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(
+                        Map.of(
+                                "errorCode",
+                                ErrorCodes.FORBIDDEN,
+                                "message",
+                                "Public registration is disabled. An authenticated administrator must create users."));
     }
 
     @Operation(

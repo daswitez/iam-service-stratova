@@ -1,6 +1,7 @@
 package com.solveria.iamservice;
 
 import com.solveria.iamservice.config.security.JwtProperties;
+import com.solveria.iamservice.config.security.PlatformAdminBootstrapProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
@@ -30,7 +31,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
             "com.solveria.iamservice.multitenancy.persistence.repository",
             "com.solveria.core.iam.infrastructure.persistence.repository"
         })
-@EnableConfigurationProperties(JwtProperties.class)
+@EnableConfigurationProperties({JwtProperties.class, PlatformAdminBootstrapProperties.class})
 @ComponentScan(basePackages = {"com.solveria.iamservice", "com.solveria.core.iam"})
 public class IamServiceApplication {
 

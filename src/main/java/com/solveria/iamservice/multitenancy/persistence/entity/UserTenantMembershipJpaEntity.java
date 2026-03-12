@@ -81,8 +81,16 @@ public class UserTenantMembershipJpaEntity {
         return membershipType;
     }
 
+    public void setMembershipType(MembershipType membershipType) {
+        this.membershipType = membershipType;
+    }
+
     public MembershipStatus getStatus() {
         return status;
+    }
+
+    public void setStatus(MembershipStatus status) {
+        this.status = status;
     }
 
     public Instant getCreatedAt() {

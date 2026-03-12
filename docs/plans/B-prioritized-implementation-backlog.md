@@ -77,6 +77,7 @@ Tareas:
 Salida esperada:
 
 - especificacion lista para migracion
+- documento de referencia: `D-relational-model-contract-mvp.md`
 
 ### P0.3 Crear migraciones complementarias
 
@@ -115,6 +116,7 @@ Tareas:
 Salida esperada:
 
 - evidencia de arranque limpio con schema real
+- evidencia documentada en `docs/changes/003-p0-4-real-startup-validation.md`
 
 ## 5. P1 - Modulo Organizacion
 

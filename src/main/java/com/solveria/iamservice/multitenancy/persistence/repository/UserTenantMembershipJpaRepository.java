@@ -18,5 +18,7 @@ public interface UserTenantMembershipJpaRepository
             findFirstByUserIdAndMembershipTypeAndStatusOrderByCreatedAtAsc(
                     Long userId, MembershipType membershipType, MembershipStatus status);
 
+    Optional<UserTenantMembershipJpaEntity> findByUserIdAndTenant_Id(Long userId, UUID tenantId);
+
     boolean existsByUserIdAndTenant_Id(Long userId, UUID tenantId);
 }

@@ -4,6 +4,13 @@ security:
     enabled: false
     secret-key: c29sdmVyaWFfY29yZXNpbV9haV9kZXZfa2V5XzMyYnl0ZXNfbG9uZ194eHh4
 
+bootstrap:
+  admin:
+    enabled: true
+    username: platform.admin
+    email: admin@solveria.local
+    password: "Admin12345!"
+
 # Actuator Configuration (DEV: expose more endpoints)
 management:
   endpoints:

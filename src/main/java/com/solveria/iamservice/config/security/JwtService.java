@@ -1,5 +1,6 @@
 package com.solveria.iamservice.config.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -49,5 +50,9 @@ public class JwtService {
                 .expiration(new Date((new Date()).getTime() + JWT_EXPIRATION_MS))
                 .signWith(key)
                 .compact();
+    }
+
+    public Claims parseClaims(String token) {
+        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
     }
 }

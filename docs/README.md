@@ -34,6 +34,14 @@ Architecture Decision Records (ADRs) - decisiones arquitectónicas documentadas.
 ### 🗺️ `plans/`
 Planes de implementacion detallados:
 - **001-academic-multitenant-mvp-implementation.md**: MVP academico multi-tenant con universidades, competencias y equipos
+- **D-relational-model-contract-mvp.md**: contrato relacional final del MVP para ejecutar migraciones
+
+### 📝 `changes/`
+Cambios funcionales documentados por corte:
+- **`changes/001-platform-admin-bootstrap-and-auth-hardening.md`**: bootstrap de `PLATFORM_ADMIN` y cierre de registro publico
+- **`changes/002-academic-mvp-relational-migration-v5.md`**: cierre del schema relacional del MVP en `V5`
+- **`changes/003-p0-4-real-startup-validation.md`**: evidencia de arranque real con PostgreSQL y Flyway aplicando hasta `V5`
+- **`changes/004-admin-users-crud-and-dev-jwt-protection.md`**: CRUD de usuarios y cierre de seguridad local para `/api/v1/admin/**`
 
 ### 🔌 `api/`
 Documentación de la API REST:
@@ -41,6 +49,7 @@ Documentación de la API REST:
 - Ejemplos de requests/responses
 - Guías de integración
 - **`api/multi-tenant-real-data-testing.md`**: Cómo probar el modelo multi-tenant actual con PostgreSQL real
+- **`api/admin-users.md`**: CRUD administrativo de usuarios con ejemplos `curl`
 
 ## Flujo de trabajo recomendado
 
