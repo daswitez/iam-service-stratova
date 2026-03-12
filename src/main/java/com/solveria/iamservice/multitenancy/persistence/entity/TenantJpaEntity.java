@@ -91,6 +91,10 @@ public class TenantJpaEntity {
         return parentTenant;
     }
 
+    public void setParentTenant(TenantJpaEntity parentTenant) {
+        this.parentTenant = parentTenant;
+    }
+
     public TenantStatus getStatus() {
         return status;
     }

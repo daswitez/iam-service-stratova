@@ -15,4 +15,6 @@ public interface TenantJpaRepository extends JpaRepository<TenantJpaEntity, UUID
     boolean existsByCodeIgnoreCaseAndIdNot(String code, UUID id);
 
     List<TenantJpaEntity> findAllByTypeOrderByCreatedAtAsc(TenantType type);
+
+    List<TenantJpaEntity> findAllByParentTenant_IdOrderByCreatedAtAsc(UUID parentTenantId);
 }

@@ -43,6 +43,7 @@ Cambios funcionales documentados por corte:
 - **`changes/003-p0-4-real-startup-validation.md`**: evidencia de arranque real con PostgreSQL y Flyway aplicando hasta `V5`
 - **`changes/004-admin-users-crud-and-dev-jwt-protection.md`**: CRUD de usuarios y cierre de seguridad local para `/api/v1/admin/**`
 - **`changes/005-admin-universities-crud.md`**: CRUD de universidades administrativas
+- **`changes/006-admin-sub-tenants-crud.md`**: CRUD de facultades y programas
 
 ### 🔌 `api/`
 Documentación de la API REST:
@@ -52,6 +53,7 @@ Documentación de la API REST:
 - **`api/multi-tenant-real-data-testing.md`**: Cómo probar el modelo multi-tenant actual con PostgreSQL real
 - **`api/admin-users.md`**: CRUD administrativo de usuarios con ejemplos `curl`
 - **`api/admin-universities.md`**: CRUD administrativo de universidades con ejemplos `curl`
+- **`api/admin-sub-tenants.md`**: CRUD administrativo de facultades y programas con ejemplos `curl`
 
 ## Flujo de trabajo recomendado
 

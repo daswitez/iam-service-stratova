@@ -19,3 +19,5 @@ Esta carpeta registra cambios funcionales relevantes del `iam-service`, con foco
   - CRUD de usuarios administrativos y proteccion JWT local para `/api/v1/admin/**`
 - `005-admin-universities-crud.md`
   - CRUD administrativo de universidades sobre `iam_tenant`
+- `006-admin-sub-tenants-crud.md`
+  - CRUD administrativo de facultades y programas con jerarquia valida

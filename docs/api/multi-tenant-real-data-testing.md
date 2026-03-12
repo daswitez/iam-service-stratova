@@ -6,6 +6,8 @@ Esta guía permite probar el modelo multi-tenant académico real ya implementado
 
 - Bootstrap automático de un `PLATFORM_ADMIN` en `dev`.
 - Login con contexto multi-tenant.
+- CRUD REST administrativo de universidades.
+- CRUD REST administrativo de sub-tenants.
 - Resolución de `tenantId` por UUID o por `code`.
 - Creación automática de tenant si el `tenantId` enviado no existe.
 - Respuesta de auth con:
@@ -16,11 +18,16 @@ Esta guía permite probar el modelo multi-tenant académico real ya implementado
 ## Qué todavía no existe por API
 
 - CRUD REST para usuarios administrativos
-- CRUD REST para `Tenant`
 - CRUD REST para `AcademicCycle`
 - CRUD REST para `Competition`
 - CRUD REST para `Team`
 - Context switch explícito por endpoint
+
+Nota:
+
+- el CRUD de `Tenant` ya existe para universidades, facultades y programas
+- la jerarquia REST valida es `UNIVERSITY -> FACULTY -> PROGRAM`
+- los inserts SQL de esta guia siguen siendo utiles para pruebas manuales y cargas directas
 
 Mientras esos endpoints no existan, la forma correcta de probar el flujo completo es:
 
