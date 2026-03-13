@@ -49,4 +49,20 @@ public class CompetitionTenantJpaEntity {
             createdAt = Instant.now();
         }
     }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public CompetitionJpaEntity getCompetition() {
+        return competition;
+    }
+
+    public TenantJpaEntity getTenant() {
+        return tenant;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
 }

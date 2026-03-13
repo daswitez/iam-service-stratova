@@ -48,6 +48,7 @@ Cambios funcionales documentados por corte:
 - **`changes/008-admin-module-authorization-and-error-normalization.md`**: autorizacion declarativa y contrato de error unificado
 - **`changes/009-admin-module-documentation-alignment.md`**: documentacion del modulo organizacional alineada con el estado real
 - **`changes/010-admin-competitions-crud.md`**: CRUD administrativo de competencias
+- **`changes/011-admin-competition-tenants.md`**: gestion administrativa de tenants participantes por competencia
 
 ### 🔌 `api/`
 Documentación de la API REST:
@@ -60,6 +61,7 @@ Documentación de la API REST:
 - **`api/admin-sub-tenants.md`**: CRUD administrativo de facultades y programas con ejemplos `curl`
 - **`api/admin-memberships.md`**: CRUD administrativo de memberships con ejemplos `curl`
 - **`api/admin-competitions.md`**: CRUD administrativo de competencias con ejemplos `curl`
+- **`api/admin-competition-tenants.md`**: gestion administrativa de tenants participantes por competencia
 
 ## Flujo de trabajo recomendado
 

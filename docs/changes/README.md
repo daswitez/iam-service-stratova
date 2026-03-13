@@ -29,3 +29,5 @@ Esta carpeta registra cambios funcionales relevantes del `iam-service`, con foco
   - documentacion publica del modulo organizacional alineada con users, universities, sub-tenants y memberships
 - `010-admin-competitions-crud.md`
   - CRUD administrativo de competencias con reglas base del MVP academico
+- `011-admin-competition-tenants.md`
+  - gestion administrativa de tenants participantes en una competencia
