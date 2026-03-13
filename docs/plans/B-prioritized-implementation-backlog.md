@@ -252,6 +252,8 @@ Campos obligatorios:
 
 ### P1.7 Gestion de tenants participantes
 
+### WE ARE HERE, THIS IS THE NEXT STEP
+
 Objetivo:
 
 - habilitar universidades y programas en una competencia
