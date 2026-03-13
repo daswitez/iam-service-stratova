@@ -11,6 +11,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UserTenantMembershipJpaRepository
         extends JpaRepository<UserTenantMembershipJpaEntity, UUID> {
 
+    List<UserTenantMembershipJpaEntity> findAllByUserIdOrderByCreatedAtAsc(Long userId);
+
+    List<UserTenantMembershipJpaEntity> findAllByTenant_IdOrderByUserIdAscCreatedAtAsc(
+            UUID tenantId);
+
     List<UserTenantMembershipJpaEntity> findByUserIdAndStatusOrderByCreatedAtAsc(
             Long userId, MembershipStatus status);
 

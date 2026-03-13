@@ -4,6 +4,7 @@ import com.solveria.iamservice.api.rest.dto.AdminSubTenantCreateRequest;
 import com.solveria.iamservice.api.rest.dto.AdminSubTenantResponse;
 import com.solveria.iamservice.api.rest.dto.AdminSubTenantUpdateRequest;
 import com.solveria.iamservice.application.service.AdminSubTenantService;
+import com.solveria.iamservice.config.security.PlatformAdminOnly;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Admin Sub-Tenants", description = "Administrative faculty and program management")
 @RestController
 @RequestMapping("/api/v1/admin")
+@PlatformAdminOnly
 public class AdminSubTenantController {
 
     private static final Logger log = LoggerFactory.getLogger(AdminSubTenantController.class);

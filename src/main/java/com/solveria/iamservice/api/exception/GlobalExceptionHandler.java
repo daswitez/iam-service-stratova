@@ -2,6 +2,7 @@ package com.solveria.iamservice.api.exception;
 
 import com.solveria.core.shared.exceptions.BusinessRuleViolationException;
 import com.solveria.core.shared.exceptions.EntityNotFoundException;
+import com.solveria.core.shared.exceptions.PermissionDeniedException;
 import com.solveria.core.shared.exceptions.SolverException;
 import com.solveria.iamservice.api.exception.dto.ApiErrorResponse;
 import com.solveria.iamservice.application.exception.IamServiceException;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -84,6 +86,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAccessDeniedException(
+            AccessDeniedException ex, HttpServletRequest request) {
+        log.warn(
+                "event=IAM_API_EXCEPTION_HANDLED errorCode={} status={} path={}",
+                ErrorCodes.FORBIDDEN,
+                HttpStatus.FORBIDDEN.value(),
+                request.getRequestURI(),
+                ex);
+
+        ApiErrorResponse errorResponse =
+                new ApiErrorResponse(ErrorCodes.FORBIDDEN, Instant.now(), request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleException(
             Exception ex, HttpServletRequest request) {
@@ -104,6 +122,9 @@ public class GlobalExceptionHandler {
     private HttpStatus determineHttpStatus(SolverException ex) {
         if (ex instanceof EntityNotFoundException) {
             return HttpStatus.NOT_FOUND;
+        }
+        if (ex instanceof PermissionDeniedException) {
+            return HttpStatus.FORBIDDEN;
         }
         if (ex instanceof com.solveria.iamservice.application.exception.AuthenticationException) {
             return HttpStatus.UNAUTHORIZED;

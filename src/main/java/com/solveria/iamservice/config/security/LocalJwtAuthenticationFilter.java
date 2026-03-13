@@ -39,7 +39,11 @@ public class LocalJwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return !request.getServletPath().startsWith(ADMIN_API_PREFIX);
+        String path = request.getRequestURI();
+        if (!StringUtils.hasText(path)) {
+            path = request.getServletPath();
+        }
+        return !StringUtils.hasText(path) || !path.startsWith(ADMIN_API_PREFIX);
     }
 
     @Override

@@ -79,6 +79,22 @@ class AdminUniversityControllerIT {
     }
 
     @Test
+    void createUniversity_WithNonPlatformAdminRole_Returns403() throws Exception {
+        AdminUniversityCreateRequest request =
+                new AdminUniversityCreateRequest("umsa", "Universidad Mayor de San Andres");
+
+        mockMvc.perform(
+                        post("/api/v1/admin/universities")
+                                .header(
+                                        HttpHeaders.AUTHORIZATION,
+                                        "Bearer " + tokenForRoles(List.of("ACADEMIC_ADMIN")))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.errorCode").value("FORBIDDEN"));
+    }
+
+    @Test
     void listUniversities_WithPlatformAdminRole_Returns200() throws Exception {
         when(adminUniversityService.listUniversities(null))
                 .thenReturn(

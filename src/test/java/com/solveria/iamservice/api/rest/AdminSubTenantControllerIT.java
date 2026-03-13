@@ -86,6 +86,23 @@ class AdminSubTenantControllerIT {
     }
 
     @Test
+    void createChildTenant_WithNonPlatformAdminRole_Returns403() throws Exception {
+        AdminSubTenantCreateRequest request =
+                new AdminSubTenantCreateRequest(
+                        "facultad-ingenieria", "Facultad de Ingenieria", "FACULTY");
+
+        mockMvc.perform(
+                        post("/api/v1/admin/tenants/11111111-1111-1111-1111-111111111111/children")
+                                .header(
+                                        HttpHeaders.AUTHORIZATION,
+                                        "Bearer " + tokenForRoles(List.of("ACADEMIC_ADMIN")))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.errorCode").value("FORBIDDEN"));
+    }
+
+    @Test
     void listChildren_WithPlatformAdminRole_Returns200() throws Exception {
         String parentId = "11111111-1111-1111-1111-111111111111";
         when(adminSubTenantService.listChildren(parentId, null, null))

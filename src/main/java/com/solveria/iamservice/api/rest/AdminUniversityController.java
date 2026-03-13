@@ -4,6 +4,7 @@ import com.solveria.iamservice.api.rest.dto.AdminUniversityCreateRequest;
 import com.solveria.iamservice.api.rest.dto.AdminUniversityResponse;
 import com.solveria.iamservice.api.rest.dto.AdminUniversityUpdateRequest;
 import com.solveria.iamservice.application.service.AdminUniversityService;
+import com.solveria.iamservice.config.security.PlatformAdminOnly;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Admin Universities", description = "Administrative university management")
 @RestController
 @RequestMapping("/api/v1/admin/universities")
+@PlatformAdminOnly
 public class AdminUniversityController {
 
     private static final Logger log = LoggerFactory.getLogger(AdminUniversityController.class);

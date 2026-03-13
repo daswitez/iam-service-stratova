@@ -21,3 +21,7 @@ Esta carpeta registra cambios funcionales relevantes del `iam-service`, con foco
   - CRUD administrativo de universidades sobre `iam_tenant`
 - `006-admin-sub-tenants-crud.md`
   - CRUD administrativo de facultades y programas con jerarquia valida
+- `007-admin-memberships-crud.md`
+  - CRUD administrativo de memberships con primaria activa unica por usuario
+- `008-admin-module-authorization-and-error-normalization.md`
+  - autorizacion declarativa para endpoints admin y contrato de error unificado

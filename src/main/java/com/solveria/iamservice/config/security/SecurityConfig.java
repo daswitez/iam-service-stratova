@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -43,11 +44,14 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
+    private final ObjectMapper objectMapper;
 
-    public SecurityConfig(JwtProperties jwtProperties) {
+    public SecurityConfig(JwtProperties jwtProperties, ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
         if (jwtProperties.enabled()) {
             log.info("event=SECURITY_CONFIG_JWT_ENABLED enabled=true");
         } else {
@@ -110,7 +114,7 @@ public class SecurityConfig {
                                         .permitAll()
                                         .requestMatchers(
                                                 new AntPathRequestMatcher("/api/v1/admin/**"))
-                                        .hasAuthority("ROLE_PLATFORM_ADMIN")
+                                        .authenticated()
 
                                         // Protected endpoints: All /api/** require authentication
                                         .requestMatchers(new AntPathRequestMatcher("/api/**"))
@@ -179,7 +183,7 @@ public class SecurityConfig {
                                         .permitAll()
                                         .requestMatchers(
                                                 new AntPathRequestMatcher("/api/v1/admin/**"))
-                                        .hasAuthority("ROLE_PLATFORM_ADMIN")
+                                        .authenticated()
                                         // Keep non-admin APIs open in DEV until the rest of the
                                         // modules are migrated to JWT.
                                         .anyRequest()
@@ -250,7 +254,6 @@ public class SecurityConfig {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 
-        ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.writeValue(response.getWriter(), errorResponse);
     }
 }

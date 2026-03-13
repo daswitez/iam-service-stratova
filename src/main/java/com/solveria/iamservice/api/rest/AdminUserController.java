@@ -4,6 +4,7 @@ import com.solveria.iamservice.api.rest.dto.AdminUserCreateRequest;
 import com.solveria.iamservice.api.rest.dto.AdminUserResponse;
 import com.solveria.iamservice.api.rest.dto.AdminUserUpdateRequest;
 import com.solveria.iamservice.application.service.AdminUserService;
+import com.solveria.iamservice.config.security.PlatformAdminOnly;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Admin Users", description = "Administrative user lifecycle management")
 @RestController
 @RequestMapping("/api/v1/admin/users")
+@PlatformAdminOnly
 public class AdminUserController {
 
     private static final Logger log = LoggerFactory.getLogger(AdminUserController.class);
