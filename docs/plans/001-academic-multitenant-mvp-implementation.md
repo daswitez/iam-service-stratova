@@ -216,7 +216,6 @@ Ese usuario:
   - `hostTenantId`
   - `scope`
   - `status`
-  - `academicCycleId`
   - `productName`
   - `industryCode`
   - `industryName`
@@ -362,7 +361,6 @@ No recomiendo abrir configuracion libre en esta primera version.
 2. define:
    - nombre
    - descripcion
-   - ciclo academico
    - industria o producto a simular
    - capital inicial comun
    - tamano minimo/maximo de equipo
@@ -576,7 +574,6 @@ Debe permitir filtrar por:
   "description": "Competencia academica de simulacion empresarial",
   "hostTenantId": "tenant-uuid",
   "scope": "CROSS_TENANT",
-  "academicCycleId": "cycle-uuid",
   "productName": "Bebida funcional",
   "industryCode": "food-beverage",
   "industryName": "Alimentos y bebidas",
@@ -661,7 +658,6 @@ Ejemplo:
 ### Competition
 
 - `hostTenantId` debe existir
-- `academicCycleId` debe existir
 - `initialCapitalAmount > 0`
 - `minTeamSize = 4`
 - `maxTeamSize = 6`

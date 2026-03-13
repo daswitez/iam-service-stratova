@@ -10,6 +10,7 @@ Regla actual:
 
 - solo un usuario autenticado con rol `PLATFORM_ADMIN` puede usar estos endpoints
 - en `dev`, `iam-service` valida localmente el JWT emitido por `POST /api/v1/auth/login` para las rutas `/api/v1/admin/**`
+- los errores del modulo administrativo responden con el contrato `ApiErrorResponse`
 
 ## 2. Obtener token de administrador
 
@@ -154,7 +155,9 @@ Respuesta esperada:
 {
   "errorCode": "UNAUTHORIZED",
   "timestamp": "2026-03-12T23:00:00Z",
-  "path": "/api/v1/admin/users"
+  "path": "/api/v1/admin/users",
+  "details": null,
+  "correlationId": null
 }
 ```
 
@@ -164,18 +167,22 @@ Respuesta esperada:
 {
   "errorCode": "FORBIDDEN",
   "timestamp": "2026-03-12T23:00:00Z",
-  "path": "/api/v1/admin/users"
+  "path": "/api/v1/admin/users",
+  "details": null,
+  "correlationId": null
 }
 ```
 
 ## 5. Limitaciones actuales
 
-- la administracion de memberships completas queda para `P1.3`
-- el cambio de `primaryTenantId` soporta membership primaria, pero no expone CRUD completo de memberships
 - los roles persistidos se resuelven contra el tenant `system`
-- los CRUDs de universidades, sub-tenants y competencias todavia no estan expuestos
+- el cambio de `primaryTenantId` sigue siendo una via de compatibilidad; el CRUD completo vive en `docs/api/admin-memberships.md`
+- los roles administrativos operativos siguen concentrados en `PLATFORM_ADMIN`
+- los CRUDs de competencias, enrollments y equipos todavia no estan expuestos
 
 ## 6. Referencias
 
 - `docs/changes/004-admin-users-crud-and-dev-jwt-protection.md`
+- `docs/changes/008-admin-module-authorization-and-error-normalization.md`
 - `docs/changes/001-platform-admin-bootstrap-and-auth-hardening.md`
+- `docs/api/admin-memberships.md`

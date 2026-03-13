@@ -11,6 +11,7 @@ Regla actual:
 - solo un usuario autenticado con rol `PLATFORM_ADMIN` puede usar estos endpoints
 - una universidad se persiste como `TenantType.UNIVERSITY`
 - `DELETE` hace baja logica y deja `status=INACTIVE`
+- los errores del modulo administrativo responden con el contrato `ApiErrorResponse`
 
 ## 2. Obtener token de administrador
 
@@ -127,7 +128,9 @@ curl -X GET http://localhost:8080/api/v1/admin/universities
 {
   "errorCode": "UNAUTHORIZED",
   "timestamp": "2026-03-12T23:00:00Z",
-  "path": "/api/v1/admin/universities"
+  "path": "/api/v1/admin/universities",
+  "details": null,
+  "correlationId": null
 }
 ```
 
@@ -137,15 +140,17 @@ curl -X GET http://localhost:8080/api/v1/admin/universities
 {
   "errorCode": "FORBIDDEN",
   "timestamp": "2026-03-12T23:00:00Z",
-  "path": "/api/v1/admin/universities"
+  "path": "/api/v1/admin/universities",
+  "details": null,
+  "correlationId": null
 }
 ```
 
 ## 5. Limitaciones actuales
 
-- este endpoint solo administra universidades, no facultades ni programas
-- el CRUD de sub-tenants queda para `P1.2`
-- la asignacion de memberships a usuarios queda para `P1.3`
+- este endpoint solo administra universidades
+- facultades y programas se documentan en `docs/api/admin-sub-tenants.md`
+- memberships se documentan en `docs/api/admin-memberships.md`
 
 ## 6. Troubleshooting
 
@@ -244,4 +249,7 @@ curl -X POST http://localhost:8080/api/v1/admin/universities \
 ## 7. Referencias
 
 - `docs/changes/005-admin-universities-crud.md`
+- `docs/changes/008-admin-module-authorization-and-error-normalization.md`
 - `docs/api/admin-users.md`
+- `docs/api/admin-sub-tenants.md`
+- `docs/api/admin-memberships.md`

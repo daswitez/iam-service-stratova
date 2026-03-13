@@ -44,6 +44,10 @@ Cambios funcionales documentados por corte:
 - **`changes/004-admin-users-crud-and-dev-jwt-protection.md`**: CRUD de usuarios y cierre de seguridad local para `/api/v1/admin/**`
 - **`changes/005-admin-universities-crud.md`**: CRUD de universidades administrativas
 - **`changes/006-admin-sub-tenants-crud.md`**: CRUD de facultades y programas
+- **`changes/007-admin-memberships-crud.md`**: CRUD administrativo de memberships
+- **`changes/008-admin-module-authorization-and-error-normalization.md`**: autorizacion declarativa y contrato de error unificado
+- **`changes/009-admin-module-documentation-alignment.md`**: documentacion del modulo organizacional alineada con el estado real
+- **`changes/010-admin-competitions-crud.md`**: CRUD administrativo de competencias
 
 ### 🔌 `api/`
 Documentación de la API REST:
@@ -54,6 +58,8 @@ Documentación de la API REST:
 - **`api/admin-users.md`**: CRUD administrativo de usuarios con ejemplos `curl`
 - **`api/admin-universities.md`**: CRUD administrativo de universidades con ejemplos `curl`
 - **`api/admin-sub-tenants.md`**: CRUD administrativo de facultades y programas con ejemplos `curl`
+- **`api/admin-memberships.md`**: CRUD administrativo de memberships con ejemplos `curl`
+- **`api/admin-competitions.md`**: CRUD administrativo de competencias con ejemplos `curl`
 
 ## Flujo de trabajo recomendado
 

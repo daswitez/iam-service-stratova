@@ -114,11 +114,17 @@ El servicio ahora soporta una base académica multi-tenant real:
 
 Todavía no hay endpoints CRUD administrativos para crear:
 
-- tenants
 - ciclos académicos
 - competencias
 - equipos
 - team members
+
+Hoy sí existen endpoints administrativos REST para:
+
+- usuarios
+- universidades
+- facultades y programas
+- memberships
 
 Mientras esos endpoints no existan, la forma recomendada de probar el flujo completo es sembrar PostgreSQL con SQL real.
 
@@ -126,7 +132,10 @@ Mientras esos endpoints no existan, la forma recomendada de probar el flujo comp
 
 Ver:
 
-- `docs/endpoints/iam/auth.md`
+- `docs/api/admin-users.md`
+- `docs/api/admin-universities.md`
+- `docs/api/admin-sub-tenants.md`
+- `docs/api/admin-memberships.md`
 - `docs/api/multi-tenant-real-data-testing.md`
 
 ---

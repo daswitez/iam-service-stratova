@@ -25,3 +25,7 @@ Esta carpeta registra cambios funcionales relevantes del `iam-service`, con foco
   - CRUD administrativo de memberships con primaria activa unica por usuario
 - `008-admin-module-authorization-and-error-normalization.md`
   - autorizacion declarativa para endpoints admin y contrato de error unificado
+- `009-admin-module-documentation-alignment.md`
+  - documentacion publica del modulo organizacional alineada con users, universities, sub-tenants y memberships
+- `010-admin-competitions-crud.md`
+  - CRUD administrativo de competencias con reglas base del MVP academico

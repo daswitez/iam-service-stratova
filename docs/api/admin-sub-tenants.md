@@ -17,6 +17,7 @@ Regla actual:
   - `UNIVERSITY -> FACULTY`
   - `FACULTY -> PROGRAM`
 - no se permite crear `PROGRAM` directo bajo `UNIVERSITY`
+- los errores del modulo administrativo responden con el contrato `ApiErrorResponse`
 
 ## 2. Obtener token de administrador
 
@@ -162,11 +163,27 @@ Si el `code` ya existe, el servicio devuelve una violacion de regla de negocio.
 {
   "errorCode": "UNAUTHORIZED",
   "timestamp": "2026-03-12T23:00:00Z",
-  "path": "/api/v1/admin/tenants/<PARENT_ID>/children"
+  "path": "/api/v1/admin/tenants/<PARENT_ID>/children",
+  "details": null,
+  "correlationId": null
+}
+```
+
+### Con token sin `PLATFORM_ADMIN`
+
+```json
+{
+  "errorCode": "FORBIDDEN",
+  "timestamp": "2026-03-12T23:00:00Z",
+  "path": "/api/v1/admin/tenants/<PARENT_ID>/children",
+  "details": null,
+  "correlationId": null
 }
 ```
 
 ## 6. Referencias
 
 - `docs/changes/006-admin-sub-tenants-crud.md`
+- `docs/changes/008-admin-module-authorization-and-error-normalization.md`
 - `docs/api/admin-universities.md`
+- `docs/api/admin-memberships.md`

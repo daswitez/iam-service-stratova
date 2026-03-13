@@ -242,7 +242,6 @@ Campos obligatorios:
 - nombre
 - codigo
 - host tenant
-- ciclo academico
 - producto
 - industria
 - capital inicial
