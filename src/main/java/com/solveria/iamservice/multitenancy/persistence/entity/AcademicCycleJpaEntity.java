@@ -77,4 +77,12 @@ public class AcademicCycleJpaEntity {
     public TenantJpaEntity getOwnerTenant() {
         return ownerTenant;
     }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
 }

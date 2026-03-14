@@ -52,11 +52,15 @@ public class AdminCompetitionController {
 
     @Operation(
             summary = "List competitions",
-            description = "Lists competitions, optionally filtered by status.")
+            description =
+                    "Lists competitions, optionally filtered by status, host tenant and academic cycle.")
     @GetMapping
     public ResponseEntity<List<AdminCompetitionResponse>> listCompetitions(
-            @RequestParam(required = false) String status) {
-        return ResponseEntity.ok(adminCompetitionService.listCompetitions(status));
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String hostTenantId,
+            @RequestParam(required = false) String cycle) {
+        return ResponseEntity.ok(
+                adminCompetitionService.listCompetitions(status, hostTenantId, cycle));
     }
 
     @Operation(summary = "Get competition", description = "Gets a competition by id.")

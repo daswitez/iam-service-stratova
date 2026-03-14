@@ -49,6 +49,7 @@ Cambios funcionales documentados por corte:
 - **`changes/009-admin-module-documentation-alignment.md`**: documentacion del modulo organizacional alineada con el estado real
 - **`changes/010-admin-competitions-crud.md`**: CRUD administrativo de competencias
 - **`changes/011-admin-competition-tenants.md`**: gestion administrativa de tenants participantes por competencia
+- **`changes/012-admin-competition-search-filters.md`**: filtros administrativos por estado, tenant host y ciclo academico en competencias
 
 ### 🔌 `api/`
 Documentación de la API REST:
@@ -60,7 +61,7 @@ Documentación de la API REST:
 - **`api/admin-universities.md`**: CRUD administrativo de universidades con ejemplos `curl`
 - **`api/admin-sub-tenants.md`**: CRUD administrativo de facultades y programas con ejemplos `curl`
 - **`api/admin-memberships.md`**: CRUD administrativo de memberships con ejemplos `curl`
-- **`api/admin-competitions.md`**: CRUD administrativo de competencias con ejemplos `curl`
+- **`api/admin-competitions.md`**: CRUD administrativo de competencias y filtros por estado, tenant host y ciclo academico
 - **`api/admin-competition-tenants.md`**: gestion administrativa de tenants participantes por competencia
 
 ## Flujo de trabajo recomendado

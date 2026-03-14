@@ -5,6 +5,7 @@ import com.solveria.core.shared.exceptions.EntityNotFoundException;
 import com.solveria.iamservice.api.rest.dto.AdminCompetitionCreateRequest;
 import com.solveria.iamservice.api.rest.dto.AdminCompetitionResponse;
 import com.solveria.iamservice.api.rest.dto.AdminCompetitionUpdateRequest;
+import com.solveria.iamservice.multitenancy.persistence.entity.AcademicCycleJpaEntity;
 import com.solveria.iamservice.multitenancy.persistence.entity.CompetitionJpaEntity;
 import com.solveria.iamservice.multitenancy.persistence.entity.CompetitionRoleAssignmentMethod;
 import com.solveria.iamservice.multitenancy.persistence.entity.CompetitionScope;
@@ -12,8 +13,11 @@ import com.solveria.iamservice.multitenancy.persistence.entity.CompetitionStatus
 import com.solveria.iamservice.multitenancy.persistence.entity.TeamCreationMode;
 import com.solveria.iamservice.multitenancy.persistence.entity.TenantJpaEntity;
 import com.solveria.iamservice.multitenancy.persistence.entity.TenantStatus;
+import com.solveria.iamservice.multitenancy.persistence.repository.AcademicCycleJpaRepository;
 import com.solveria.iamservice.multitenancy.persistence.repository.CompetitionJpaRepository;
 import com.solveria.iamservice.multitenancy.persistence.repository.TenantJpaRepository;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -29,12 +33,15 @@ public class AdminCompetitionService {
 
     private final CompetitionJpaRepository competitionJpaRepository;
     private final TenantJpaRepository tenantJpaRepository;
+    private final AcademicCycleJpaRepository academicCycleJpaRepository;
 
     public AdminCompetitionService(
             CompetitionJpaRepository competitionJpaRepository,
-            TenantJpaRepository tenantJpaRepository) {
+            TenantJpaRepository tenantJpaRepository,
+            AcademicCycleJpaRepository academicCycleJpaRepository) {
         this.competitionJpaRepository = competitionJpaRepository;
         this.tenantJpaRepository = tenantJpaRepository;
+        this.academicCycleJpaRepository = academicCycleJpaRepository;
     }
 
     @Transactional
@@ -45,6 +52,8 @@ public class AdminCompetitionService {
         TenantJpaEntity hostTenant = getActiveTenant(request.hostTenantId());
         validateCompetitionWindow(request.startsAt(), request.endsAt());
         validateMvpTeamSize(request.minTeamSize(), request.maxTeamSize());
+        AcademicCycleJpaEntity academicCycle =
+                resolveAcademicCycle(hostTenant, request.startsAt(), request.endsAt());
 
         CompetitionJpaEntity competition =
                 new CompetitionJpaEntity(
@@ -53,7 +62,7 @@ public class AdminCompetitionService {
                         normalizeDescription(request.description()),
                         parseScope(request.scope()),
                         hostTenant,
-                        null,
+                        academicCycle,
                         request.productName().trim(),
                         normalizeCode(request.industryCode()),
                         request.industryName().trim(),
@@ -71,13 +80,24 @@ public class AdminCompetitionService {
     }
 
     @Transactional(readOnly = true)
-    public List<AdminCompetitionResponse> listCompetitions(String status) {
+    public List<AdminCompetitionResponse> listCompetitions(
+            String status, String hostTenantId, String cycle) {
         CompetitionStatus requestedStatus = parseOptionalStatus(status);
+        UUID requestedHostTenantId = parseOptionalUuid(hostTenantId, "tenant.reference.invalid");
+        String requestedCycle = normalizeOptionalCycle(cycle);
         return competitionJpaRepository.findAllByOrderByCreatedAtAsc().stream()
                 .filter(
                         competition ->
                                 requestedStatus == null
                                         || competition.getStatus() == requestedStatus)
+                .filter(
+                        competition ->
+                                requestedHostTenantId == null
+                                        || competition
+                                                .getOwnerTenant()
+                                                .getId()
+                                                .equals(requestedHostTenantId))
+                .filter(competition -> matchesCycle(competition, requestedCycle))
                 .map(this::toResponse)
                 .toList();
     }
@@ -97,13 +117,15 @@ public class AdminCompetitionService {
         TenantJpaEntity hostTenant = getActiveTenant(request.hostTenantId());
         validateCompetitionWindow(request.startsAt(), request.endsAt());
         validateMvpTeamSize(request.minTeamSize(), request.maxTeamSize());
+        AcademicCycleJpaEntity academicCycle =
+                resolveAcademicCycle(hostTenant, request.startsAt(), request.endsAt());
 
         competition.setCode(normalizedCode);
         competition.setName(request.name().trim());
         competition.setDescription(normalizeDescription(request.description()));
         competition.setScope(parseScope(request.scope()));
         competition.setOwnerTenant(hostTenant);
-        competition.setAcademicCycle(null);
+        competition.setAcademicCycle(academicCycle);
         competition.setProductName(request.productName().trim());
         competition.setIndustryCode(normalizeCode(request.industryCode()));
         competition.setIndustryName(request.industryName().trim());
@@ -202,12 +224,26 @@ public class AdminCompetitionService {
         return parseStatus(status);
     }
 
+    private UUID parseOptionalUuid(String value, String errorCode) {
+        if (!StringUtils.hasText(value)) {
+            return null;
+        }
+        return parseUuid(value, errorCode);
+    }
+
     private CompetitionStatus parseStatus(String status) {
         try {
             return CompetitionStatus.valueOf(status.trim().toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException ex) {
             throw new BusinessRuleViolationException("competition.status.invalid");
         }
+    }
+
+    private String normalizeOptionalCycle(String cycle) {
+        if (!StringUtils.hasText(cycle)) {
+            return null;
+        }
+        return cycle.trim().toUpperCase(Locale.ROOT);
     }
 
     private UUID parseUuid(String value, String errorCode) {
@@ -236,6 +272,33 @@ public class AdminCompetitionService {
             return null;
         }
         return description.trim();
+    }
+
+    private AcademicCycleJpaEntity resolveAcademicCycle(
+            TenantJpaEntity hostTenant, java.time.Instant startsAt, java.time.Instant endsAt) {
+        if (startsAt == null || endsAt == null) {
+            return null;
+        }
+
+        LocalDate startsOn = startsAt.atZone(ZoneOffset.UTC).toLocalDate();
+        LocalDate endsOn = endsAt.atZone(ZoneOffset.UTC).toLocalDate();
+
+        return academicCycleJpaRepository
+                .findAllByOwnerTenantIdOrderByStartDateAsc(hostTenant.getId())
+                .stream()
+                .filter(cycle -> !cycle.getStartDate().isAfter(startsOn))
+                .filter(cycle -> !cycle.getEndDate().isBefore(endsOn))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private boolean matchesCycle(CompetitionJpaEntity competition, String requestedCycle) {
+        if (requestedCycle == null) {
+            return true;
+        }
+        AcademicCycleJpaEntity academicCycle = competition.getAcademicCycle();
+        return academicCycle != null
+                && requestedCycle.equals(academicCycle.getCode().toUpperCase(Locale.ROOT));
     }
 
     private AdminCompetitionResponse toResponse(CompetitionJpaEntity competition) {

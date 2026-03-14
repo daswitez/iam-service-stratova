@@ -94,4 +94,4 @@ curl -X DELETE http://localhost:8080/api/v1/admin/competitions/$COMPETITION_ID/t
 
 - el endpoint no agrega automaticamente el tenant host
 - la participacion se modela como relacion explicita en `iam_competition_tenant`
-- el siguiente paso natural es abrir filtros de busqueda para competitions
+- el siguiente paso natural es abrir enrollments multiuniversidad

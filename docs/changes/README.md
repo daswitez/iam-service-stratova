@@ -31,3 +31,5 @@ Esta carpeta registra cambios funcionales relevantes del `iam-service`, con foco
   - CRUD administrativo de competencias con reglas base del MVP academico
 - `011-admin-competition-tenants.md`
   - gestion administrativa de tenants participantes en una competencia
+- `012-admin-competition-search-filters.md`
+  - filtros administrativos por estado, tenant host y ciclo academico para competencias

@@ -83,7 +83,8 @@ class AdminCompetitionControllerIT {
 
     @Test
     void listCompetitions_WithPlatformAdminRole_Returns200() throws Exception {
-        when(adminCompetitionService.listCompetitions(null)).thenReturn(List.of(sampleResponse()));
+        when(adminCompetitionService.listCompetitions(null, null, null))
+                .thenReturn(List.of(sampleResponse()));
 
         mockMvc.perform(
                         get("/api/v1/admin/competitions")
@@ -93,6 +94,25 @@ class AdminCompetitionControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("Business Simulation 2026"))
                 .andExpect(jsonPath("$[0].status").value("DRAFT"));
+    }
+
+    @Test
+    void listCompetitions_WithFilters_Returns200() throws Exception {
+        when(adminCompetitionService.listCompetitions(
+                        "ACTIVE", "11111111-1111-1111-1111-111111111111", "2026-S1"))
+                .thenReturn(List.of(sampleResponse()));
+
+        mockMvc.perform(
+                        get("/api/v1/admin/competitions")
+                                .param("status", "ACTIVE")
+                                .param("hostTenantId", "11111111-1111-1111-1111-111111111111")
+                                .param("cycle", "2026-S1")
+                                .header(
+                                        HttpHeaders.AUTHORIZATION,
+                                        "Bearer " + tokenForRoles(List.of("PLATFORM_ADMIN"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].code").value("biz-sim-2026"))
+                .andExpect(jsonPath("$[0].hostTenantCode").value("umsa"));
     }
 
     @Test
