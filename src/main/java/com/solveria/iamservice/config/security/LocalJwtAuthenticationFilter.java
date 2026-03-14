@@ -22,6 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class LocalJwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String ADMIN_API_PREFIX = "/api/v1/admin/";
+    private static final String COMPETITIONS_API_PREFIX = "/api/v1/competitions/";
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtService jwtService;
@@ -43,7 +44,9 @@ public class LocalJwtAuthenticationFilter extends OncePerRequestFilter {
         if (!StringUtils.hasText(path)) {
             path = request.getServletPath();
         }
-        return !StringUtils.hasText(path) || !path.startsWith(ADMIN_API_PREFIX);
+        return !StringUtils.hasText(path)
+                || (!path.startsWith(ADMIN_API_PREFIX)
+                        && !path.startsWith(COMPETITIONS_API_PREFIX));
     }
 
     @Override

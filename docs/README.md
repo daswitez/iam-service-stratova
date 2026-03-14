@@ -50,6 +50,7 @@ Cambios funcionales documentados por corte:
 - **`changes/010-admin-competitions-crud.md`**: CRUD administrativo de competencias
 - **`changes/011-admin-competition-tenants.md`**: gestion administrativa de tenants participantes por competencia
 - **`changes/012-admin-competition-search-filters.md`**: filtros administrativos por estado, tenant host y ciclo academico en competencias
+- **`changes/013-competition-staff-enrollments.md`**: enrollments de staff multiuniversidad con `originTenantId`
 
 ### 🔌 `api/`
 Documentación de la API REST:
@@ -63,6 +64,7 @@ Documentación de la API REST:
 - **`api/admin-memberships.md`**: CRUD administrativo de memberships con ejemplos `curl`
 - **`api/admin-competitions.md`**: CRUD administrativo de competencias y filtros por estado, tenant host y ciclo academico
 - **`api/admin-competition-tenants.md`**: gestion administrativa de tenants participantes por competencia
+- **`api/competition-enrollments.md`**: enrollments de staff en competencias con detalle, cambio de estado y retiro logico
 
 ## Flujo de trabajo recomendado
 

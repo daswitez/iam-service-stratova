@@ -33,3 +33,5 @@ Esta carpeta registra cambios funcionales relevantes del `iam-service`, con foco
   - gestion administrativa de tenants participantes en una competencia
 - `012-admin-competition-search-filters.md`
   - filtros administrativos por estado, tenant host y ciclo academico para competencias
+- `013-competition-staff-enrollments.md`
+  - enrollments de staff multiuniversidad con `originTenantId` y cambio de estado

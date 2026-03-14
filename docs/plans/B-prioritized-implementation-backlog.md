@@ -252,8 +252,6 @@ Campos obligatorios:
 
 ### P1.7 Gestion de tenants participantes
 
-### WE ARE HERE, THIS IS THE NEXT STEP
-
 Objetivo:
 
 - habilitar universidades y programas en una competencia
@@ -304,6 +302,8 @@ Reglas:
 - no puede haber enrollment ambiguo
 
 ### P2.2 Endpoint de staff elegible
+
+### WE ARE HER NOW
 
 Objetivo:
 

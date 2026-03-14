@@ -178,7 +178,7 @@ Respuesta esperada:
 - los roles persistidos se resuelven contra el tenant `system`
 - el cambio de `primaryTenantId` sigue siendo una via de compatibilidad; el CRUD completo vive en `docs/api/admin-memberships.md`
 - los roles administrativos operativos siguen concentrados en `PLATFORM_ADMIN`
-- los CRUDs de competencias, enrollments y equipos todavia no estan expuestos
+- competencias y enrollments de staff ya estan expuestos; equipos y enrollments de estudiantes siguen pendientes
 
 ## 6. Referencias
 

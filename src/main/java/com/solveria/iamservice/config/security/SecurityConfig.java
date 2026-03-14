@@ -184,6 +184,10 @@ public class SecurityConfig {
                                         .requestMatchers(
                                                 new AntPathRequestMatcher("/api/v1/admin/**"))
                                         .authenticated()
+                                        .requestMatchers(
+                                                new AntPathRequestMatcher(
+                                                        "/api/v1/competitions/**"))
+                                        .authenticated()
                                         // Keep non-admin APIs open in DEV until the rest of the
                                         // modules are migrated to JWT.
                                         .anyRequest()
